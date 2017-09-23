@@ -22,10 +22,11 @@ void setup() {
     Serial.print("IP address: "); Serial.println(WiFi.localIP());
 
     server.serveStatic("/static/favicon.png", SPIFFS, "/static/favicon.png");
-    server.serveStatic("/static/css/bootstrap.min.css", SPIFFS, "/static/bootstrap-4.0.0-beta/css/bootstrap.min.css");
+    server.serveStatic("/static/bootstrap.min.css", SPIFFS, "/static/bootstrap.min.css");
     server.serveStatic("/static/jquery-3.2.1.min.js", SPIFFS, "/static/jquery-3.2.1.min.js");
     server.serveStatic("/static/popper.min.js", SPIFFS, "/static/popper.min.js");
-    server.serveStatic("/static/js/bootstrap.min.js", SPIFFS, "/static/bootstrap-4.0.0-beta/js/bootstrap.min.js");
+    server.serveStatic("/static/bootstrap.min.js", SPIFFS, "/static/bootstrap.min.js");
+    server.serveStatic("/static/my-styles.css", SPIFFS, "/static/my-styles.css");
     server.serveStatic("/", SPIFFS, "/index.html");
     server.serveStatic("/config.html", SPIFFS, "/config.html");
     

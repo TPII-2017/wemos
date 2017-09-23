@@ -9,15 +9,15 @@ void setup() {
     Serial.begin(115200);
     WiFi.begin("Agustin", "doctor reformulemelo");
 
-    if (SPIFFS.begin())
-        Serial.println("Todo piola");
-    else
-        Serial.println("Nada piola");
+    if (!SPIFFS.begin())
+        Serial.println("No se pudo abrir el file system.");
 
+	Serial.println();
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.println("Waiting to connect…");
+        delay(100); Serial.print(".");
     }
+    Serial.println();
+    
 
     Serial.print("IP address: "); Serial.println(WiFi.localIP());
 
@@ -27,15 +27,36 @@ void setup() {
     server.serveStatic("/static/popper.min.js", SPIFFS, "/static/popper.min.js");
     server.serveStatic("/static/bootstrap.min.js", SPIFFS, "/static/bootstrap.min.js");
     server.serveStatic("/static/my-styles.css", SPIFFS, "/static/my-styles.css");
-    server.serveStatic("/", SPIFFS, "/index.html");
-    server.serveStatic("/config.html", SPIFFS, "/config.html");
-    
+    server.on("/config.html", HTTP_GET, handle_config_get);
+    server.on("/config.html", HTTP_POST, handle_config_post);
+    server.on("/", HTTP_GET, handle_index_get);
+    server.on("/", HTTP_POST, handle_index_post);
+
     server.begin();
-    Serial.println("Server listening");
+}
+
+void handle_index_get() {
+	server.send(200, "text/html", FileManager::read_file("/index.html"));
+}
+
+void handle_index_post() {
+	for (int i = 0; i < server.args(); i++ ) {
+        Serial.println(server.argName(i));
+    }
+	server.send(200, "text/html", FileManager::read_file("/index.html"));
+}
+
+void handle_config_get() {
+    server.send(200, "text/html", FileManager::read_file("/config.html"));
+}
+
+void handle_config_post() {
+    for (int i = 0; i < server.args(); i++ ) {
+        Serial.println(server.argName(i));
+    }
+    server.send(200, "text/html", FileManager::read_file("/config.html"));
 }
 
 void loop() {
-
     server.handleClient();
-
 }

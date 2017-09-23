@@ -21,8 +21,13 @@ void setup() {
 
     Serial.print("IP address: "); Serial.println(WiFi.localIP());
 
-    server.serveStatic("/stylesheet.css", SPIFFS, "/stylesheet.css");
-    server.on("/", handleRootPath);
+    server.serveStatic("/static/favicon.png", SPIFFS, "/static/favicon.png");
+    server.serveStatic("/static/css/bootstrap.min.css", SPIFFS, "/static/bootstrap-4.0.0-beta/css/bootstrap.min.css");
+    server.serveStatic("/static/jquery-3.2.1.min.js", SPIFFS, "/static/jquery-3.2.1.min.js");
+    server.serveStatic("/static/popper.min.js", SPIFFS, "/static/popper.min.js");
+    server.serveStatic("/static/js/bootstrap.min.js", SPIFFS, "/static/bootstrap-4.0.0-beta/js/bootstrap.min.js");
+    server.serveStatic("/", SPIFFS, "/index.html");
+    server.serveStatic("/config.html", SPIFFS, "/config.html");
     
     server.begin();
     Serial.println("Server listening");
@@ -30,13 +35,6 @@ void setup() {
 
 void loop() {
 
-    server.handleClient();         //Handling of incoming requests
-
-}
-
-void handleRootPath() {            //Handler for the rooth path
-
-    server.send(200, "text/html", FileManager::read_file("/index.html"));
-    Serial.println("Se metio al handle");
+    server.handleClient();
 
 }

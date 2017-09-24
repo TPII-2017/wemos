@@ -2,19 +2,21 @@
 #include <ESP8266WebServer.h>
 #include "FileManager.h"
 #include "LedMatrix.h"
+#include "Authentication.h"
 
 ESP8266WebServer server(80);
 char matrix [ROWS][COLUMNS];
 
-void handle_index_get() {
+void handle_index() {
 	server.send(200, "text/html", FileManager::read_file("/index.html"));
 }
 
-void handle_index_post() {
-	for (int i = 0; i < server.args(); i++ ) {
-        Serial.println(server.argName(i));
+void handle_authentication() {
+	if(server.arg("token") == TOKEN){
+        handle_config();
+    }else{
+        handle_index();
     }
-	server.send(200, "text/html", FileManager::read_file("/index.html"));
 }
 
 void handle_config() {
@@ -87,8 +89,8 @@ void setup() {
     server.on("/phrase", handle_phrase);
     server.on("/matrix", handle_matrix);
     server.onNotFound(handleNotFound);
-    server.on("/", HTTP_GET, handle_index_get);
-    server.on("/", HTTP_POST, handle_index_post);
+    server.on("/", handle_index);
+    server.on("/authentication", handle_authentication);
 
     server.begin();
 }

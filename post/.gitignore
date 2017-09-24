@@ -2,4 +2,4 @@
 .piolibdeps
 .vscode
 .travis.yml
-.platformio.ini
+platformio.ini

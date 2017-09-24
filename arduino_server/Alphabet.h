@@ -9,4 +9,7 @@ extern const char** uppercase_alphabet;
 extern const char** lowercase_alphabet;
 extern const char** numbers;
 
+// Obtener el indice del caracter pasado por parametro dentro de uppercase o lowercase_alphabet
+char index_of_char(char);
+
 #endif

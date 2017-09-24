@@ -3,9 +3,9 @@
 #include "FileManager.h"
 #include "LedMatrix.h"
 #include "Authentication.h"
+#include "LedMatrix.h"
 
 ESP8266WebServer server(80);
-char matrix [ROWS][COLUMNS];
 
 void handle_index() {
 	server.send(200, "text/html", FileManager::read_file("/index.html"));

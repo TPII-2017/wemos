@@ -3,13 +3,9 @@
 #include <ESP8266WebServer.h>
 #include "HTML.h"
 #include "SSID.h"
- 
+#include "LedMatrix.h"
+
 ESP8266WebServer server(80); //server init, port 80
-
-#define ROWS 8
-#define COLUMNS 24
-
-int matrix [ROWS][COLUMNS];
 
 void handleRoot(){
     server.send ( 200, "text/html", INDEX_HTML);
@@ -26,9 +22,6 @@ void handleMatrix(){
     for(int row = 0; row < ROWS; row++){
         for(int column = 0; column < COLUMNS; column++){
             String aux= String(row) + "-" + String(column);
-            Serial.print(aux);
-            Serial.print(" | ");
-            Serial.println(server.arg(aux));
             matrix[row][column] = server.arg(aux)=="1"?1:0;
         }
     }

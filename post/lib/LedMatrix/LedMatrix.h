@@ -5,5 +5,4 @@
 #define COLUMNS 24
 
 extern char matrix [ROWS][COLUMNS];
-
 #endif

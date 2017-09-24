@@ -27,6 +27,12 @@ void handleNotFound() {
     server.send ( 302, "text/plain", "");
 }
 
+void redirect_config(){
+    //redirect to "/config.html"
+    server.sendHeader("Location", String("/config.html"), true);
+    server.send ( 302, "text/plain", ""); // redirect URI response
+}
+
 void handle_matrix(){
     for(int row = 0; row < ROWS; row++){
         for(int column = 0; column < COLUMNS; column++){
@@ -45,10 +51,14 @@ void handle_matrix(){
         }
         Serial.println("");
     }
+    redirect_config();   
+}
 
-    //redirect to root "/config.html"
-    server.sendHeader("Location", String("/config.html"), true);
-    server.send ( 302, "text/plain", ""); // redirect URI response
+void handle_phrase(){
+    String phrase = server.arg("phrase");
+    Serial.print("Caracteres que se deberian mostrar: ");
+    Serial.println(phrase);
+    redirect_config();
 }
 
 void setup() {
@@ -74,7 +84,7 @@ void setup() {
     server.serveStatic("/static/bootstrap.min.js", SPIFFS, "/static/bootstrap.min.js");
     server.serveStatic("/static/my-styles.css", SPIFFS, "/static/my-styles.css");
     server.on("/config.html", handle_config);
-    server.on("/caracteres", handle_caracteres);
+    server.on("/phrase", handle_phrase);
     server.on("/matrix", handle_matrix);
     server.onNotFound(handleNotFound);
     server.on("/", HTTP_GET, handle_index_get);

@@ -43,9 +43,9 @@ void ledmatrix_set_char(char pos_x, char c){
 		// etc
 		for(row = 0; row < CHAR_HEIGHT; row++){		
 			if (byte_col / 128 == 1){
-				matrix[row][column] = 'X';
+				matrix[row][column] = LED_ON;
 			}else{
-				matrix[row][column] = '.';
+				matrix[row][column] = LED_OFF;
 			}
 			byte_col = byte_col << 1;			 
 		}
@@ -56,7 +56,17 @@ void ledmatrix_set_char(char pos_x, char c){
 void ledmatrix_clean(void){
 	for(int row = 0; row < ROWS; row++){
         for(int column = 0; column < COLUMNS; column++){
-            matrix[row][column] = '.';
+            matrix[row][column] = LED_OFF;
         }
+    }
+}
+
+void ledmatrix_print_serial(){
+    char row, column;
+    for(row = 0; row < ROWS; row++){
+        for(column = 0; column < COLUMNS; column++){
+            Serial.print(matrix[row][column]);
+        }
+        Serial.println("");
     }
 }

@@ -21,10 +21,8 @@ void handleNotFound();
 void handle_post_phrase();
 void handle_post_matrix();
 void handle_post_predefined();
+void handle_index();
 
-void func(){
-    server.send(200, "text/html", "Hola");
-}
 void setup()
 {
     Serial.begin(115200);
@@ -32,7 +30,7 @@ void setup()
     if (!SPIFFS.begin())
         Serial.println("No se pudo abrir el file system.");
 
-    index_html_file = FileManager::read_file("/index.html");
+    //index_html_file = FileManager::read_file("/index.html");
     config_html_file = FileManager::read_file("/config.html");
 
     Serial.println("Setting up access point...");
@@ -51,22 +49,30 @@ void setup()
     server.serveStatic("/static/popper.min.js", SPIFFS, "/static/popper.min.js");
     server.serveStatic("/static/bootstrap.min.js", SPIFFS, "/static/bootstrap.min.js");
     server.serveStatic("/static/my-styles.css", SPIFFS, "/static/my-styles.css");
-    server.serveStatic("/", SPIFFS, "/index.html");
+    //server.serveStatic("/", SPIFFS, "/index.html");
 
     //PATHs
     server.onNotFound(handleNotFound);
-    server.on("/index", func);
     server.on("/authentication", HTTP_POST, handle_post_authentication);
     server.on("/phrase", HTTP_POST, handle_post_phrase);
     server.on("/matrix", HTTP_POST, handle_post_matrix);
     server.on("/predefined", HTTP_POST, handle_post_predefined);
-
+    server.on("/", HTTP_GET, handle_index);
+    
     server.begin(); //Start webserver
 }
 
 void loop()
 {
     server.handleClient();
+}
+
+
+void handle_index()
+{
+    if(!server.authenticate(USER, PASS))
+        return server.requestAuthentication();
+    go_to_config(200);
 }
 
 void handleNotFound()
@@ -132,5 +138,5 @@ void handle_post_predefined()
 		Serial.println("New life");
 	else
 		Serial.println("Error al elegir el predefinido");
-	go_to_config(302);
+    go_to_config(302);
 }

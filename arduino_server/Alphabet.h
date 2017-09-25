@@ -5,11 +5,10 @@
 #define CHAR_WIDTH 5
 #define ALPHABET_SIZE 26
 
-extern const char** uppercase_alphabet;
-extern const char** lowercase_alphabet;
-extern const char** numbers;
+extern const char uppercase_alphabet[ALPHABET_SIZE][CHAR_WIDTH];
+extern const char lowercase_alphabet[ALPHABET_SIZE][CHAR_WIDTH];
+extern const char numbers[10][CHAR_WIDTH];
 
-// Obtener el indice del caracter pasado por parametro dentro de uppercase o lowercase_alphabet
-char index_of_char(char);
+const char* alphabet_get_char_map(char c);
 
 #endif

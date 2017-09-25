@@ -22,6 +22,7 @@ void handle_post_phrase();
 void handle_post_matrix();
 void handle_post_predefined();
 void handle_index();
+void handle_admin();
 
 void setup()
 {
@@ -58,6 +59,7 @@ void setup()
     server.on("/matrix", HTTP_POST, handle_post_matrix);
     server.on("/predefined", HTTP_POST, handle_post_predefined);
     server.on("/", HTTP_GET, handle_index);
+    server.on("/admin", handle_admin);
     
     server.begin(); //Start webserver
 }
@@ -70,9 +72,14 @@ void loop()
 
 void handle_index()
 {
+    go_to_config(200);
+}
+
+void handle_admin()
+{
     if(!server.authenticate(USER, PASS))
         return server.requestAuthentication();
-    go_to_config(200);
+    server.send(200, "text/html", "HTML admin en construcción");
 }
 
 void handleNotFound()

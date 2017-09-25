@@ -3,7 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <WiFiClient.h> 
 #include "HTML.h"
-#include "SSID.h"
+#include "AP_SSID.h"
 #include "ledmatrix.h"
 
 ESP8266WebServer server(80); //server init, port 80
@@ -47,7 +47,7 @@ void handleArgs(){
 void setup() {
     Serial.begin(115200);
 
-    Serial.print("Setting up access point...");
+    Serial.println("Setting up access point...");
     Serial.println(SSID);
     Serial.println(PASSWORD);
     WiFi.softAP(SSID, PASSWORD);

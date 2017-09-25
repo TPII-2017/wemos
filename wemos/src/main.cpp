@@ -1,12 +1,15 @@
+#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <WiFiClient.h> 
+#include "HTML.h"
+#include "AP_SSID.h"
+#include "ledmatrix.h"
 #include "FileManager.h"
-#include "LedMatrix.h"
-#include "Authentication.h"
-#include "LedMatrix.h"
+#include "authentication.h"
 #include "WString.h"
 
-ESP8266WebServer server(80);
+ESP8266WebServer server(80); //server init, port 80
 
 String index_html_file;
 String config_html_file;
@@ -19,10 +22,12 @@ void handle_post_phrase();
 void handle_post_matrix();
 void handle_post_predefined();
 
+void func(){
+    server.send(200, "text/html", "Hola");
+}
 void setup()
 {
     Serial.begin(115200);
-    WiFi.begin("Agustin", "doctor reformulemelo");
 
     if (!SPIFFS.begin())
         Serial.println("No se pudo abrir el file system.");
@@ -30,15 +35,15 @@ void setup()
     index_html_file = FileManager::read_file("/index.html");
     config_html_file = FileManager::read_file("/config.html");
 
+    Serial.println("Setting up access point...");
+    Serial.println(SSID);
+    Serial.println(PASSWORD);
+    WiFi.softAP(SSID, PASSWORD);
+
     Serial.println();
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(100);
-        Serial.print(".");
-    }
-    Serial.println();
+    // Usually http://192.168.4.1
     Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
+    Serial.println(WiFi.softAPIP());
 
     server.serveStatic("/static/favicon.png", SPIFFS, "/static/favicon.png");
     server.serveStatic("/static/bootstrap.min.css", SPIFFS, "/static/bootstrap.min.css");
@@ -48,13 +53,20 @@ void setup()
     server.serveStatic("/static/my-styles.css", SPIFFS, "/static/my-styles.css");
     server.serveStatic("/", SPIFFS, "/index.html");
 
+    //PATHs
     server.onNotFound(handleNotFound);
+    server.on("/index", func);
     server.on("/authentication", HTTP_POST, handle_post_authentication);
     server.on("/phrase", HTTP_POST, handle_post_phrase);
     server.on("/matrix", HTTP_POST, handle_post_matrix);
     server.on("/predefined", HTTP_POST, handle_post_predefined);
 
-    server.begin();
+    server.begin(); //Start webserver
+}
+
+void loop()
+{
+    server.handleClient();
 }
 
 void handleNotFound()
@@ -93,6 +105,10 @@ void handle_post_phrase()
     String phrase = server.arg("phrase");
     Serial.print("Caracteres que se deberian mostrar: ");
     Serial.println(phrase);
+    char aux[5];
+    phrase.toCharArray(aux, 5);
+    ledmatrix_set_str(aux);
+    ledmatrix_print_serial(); 
     go_to_config(302);
 }
 
@@ -100,20 +116,8 @@ void handle_post_matrix()
 {
     for (int row = 0; row < ROWS; row++)
         for (int column = 0; column < COLUMNS; column++)
-            matrix[row][column] = server.arg(String(row) + "-" + String(column)) == "1" ? 1 : 0;
-
-    //for debug
-    for (int row = 0; row < ROWS; row++)
-    {
-        for (int column = 0; column < COLUMNS; column++)
-        {
-            if (matrix[row][column] == 1)
-                Serial.print("X");
-            else
-                Serial.print("0");
-        }
-        Serial.println("");
-    }
+            matrix[row][column] = server.arg(String(row) + "-" + String(column)) == "1" ? LED_ON : LED_OFF;
+    ledmatrix_print_serial();   
     go_to_config(302);
 }
 
@@ -129,9 +133,4 @@ void handle_post_predefined()
 	else
 		Serial.println("Error al elegir el predefinido");
 	go_to_config(302);
-}
-
-void loop()
-{
-    server.handleClient();
 }

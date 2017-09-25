@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <WiFiClient.h> 
 #include "HTML.h"
 #include "SSID.h"
 #include "ledmatrix.h"
@@ -46,19 +47,14 @@ void handleArgs(){
 void setup() {
     Serial.begin(115200);
 
-    Serial.print("Connecting to ");
+    Serial.print("Setting up access point...");
     Serial.println(SSID);
-    WiFi.begin(SSID, PASSWORD);
+    Serial.println(PASSWORD);
+    WiFi.softAP(SSID, PASSWORD);
 
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(200);
-        Serial.print(".");
-    }
-    Serial.println("\nConnected!");
-
-    // Usually 192.168.0.26
+    // Usually http://192.168.4.1
     Serial.print("IP: ");
-    Serial.println(WiFi.localIP());
+    Serial.println(WiFi.softAPIP());
 
     //roots
     server.on("/",handleRoot);

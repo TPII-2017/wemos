@@ -9,14 +9,12 @@
 						</style>\
 					</head>\
 					<body>\
-						<h1>Hola!!</h1>\
-						<form action='/args' method='post'>\
+						<h1>Matriz de LEDs!!</h1>\
+						<form action='/chars' method='post'>\
 							<fieldset>\
-								<legend>Argumentos</legend>\
-								Primer argumento:<br>\
-								<input type='text' name='arg1'><br>\
-								Segundo argumento:<br>\
-								<input type='text' name='arg2'><br>\
+								<legend>Caracteres</legend>\
+								Caracteres:<br>\
+								<input type='text' name='chars' maxlength='4'><br>\
 								<input type='submit' value='Submit'>\
 							</fieldset>\
 						</form>\

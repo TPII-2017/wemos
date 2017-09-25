@@ -3,9 +3,19 @@
 #include <ESP8266WebServer.h>
 #include "HTML.h"
 #include "SSID.h"
-#include "LedMatrix.h"
+#include "ledmatrix.h"
 
 ESP8266WebServer server(80); //server init, port 80
+
+void serial_print_matrix(){
+    char row, column;
+    for(row = 0; row < ROWS; row++){
+        for(column = 0; column < COLUMNS; column++){
+            Serial.print(matrix[row][column]);
+        }
+        Serial.println("");
+    }
+}
 
 void handleRoot(){
     server.send ( 200, "text/html", INDEX_HTML);
@@ -22,31 +32,22 @@ void handleMatrix(){
     for(int row = 0; row < ROWS; row++){
         for(int column = 0; column < COLUMNS; column++){
             String aux= String(row) + "-" + String(column);
-            matrix[row][column] = server.arg(aux)=="1"?1:0;
+            matrix[row][column] = server.arg(aux)=="1"?'X':'.';
         }
     }
-    for(int row = 0; row < ROWS; row++){
-        for(int column = 0; column < COLUMNS; column++){
-            if(matrix[row][column] == 1){
-                Serial.print("X");                
-            }else{
-                Serial.print("0");
-            }
-        }
-        Serial.println("");
-    }
+    serial_print_matrix();   
     //redirect to root "/"
     server.sendHeader("Location", String("/"), true);
     server.send ( 302, "text/plain", "");
 }
 void handleArgs(){
-    String arg1 = server.arg("arg1");
-    String arg2 = server.arg("arg2");
-    Serial.print("Argumento 1: ");
-    Serial.println(arg1);
-    Serial.print("Argumento 2: ");
-    Serial.println(arg2);
-
+    String phrase = server.arg("chars");
+    Serial.print("Caracteres pasados: ");
+    Serial.println(phrase);
+    char aux[5];
+    phrase.toCharArray(aux, 5);
+    ledmatrix_set_str(aux);
+    serial_print_matrix(); 
     //redirect to root "/"
     server.sendHeader("Location", String("/"), true);
     server.send ( 302, "text/plain", "");
@@ -71,7 +72,7 @@ void setup() {
 
     //roots
     server.on("/",handleRoot);
-    server.on("/args",handleArgs);
+    server.on("/chars",handleArgs);
     server.on("/matrix",handleMatrix);
     server.onNotFound(handleNotFound);
     server.begin(); //start webserver

@@ -5,10 +5,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<meta name="description" content="">
 		<meta name="author" content="">
-		<link rel="icon" href="static/favicon.png">
+		<link rel="icon" href="/static/favicon.png">
 		<title>Autentificación</title>
 		<!-- Bootstrap CSS -->
-		<link href="static/bootstrap-4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/static/bootstrap.min.css" rel="stylesheet">
 	</head>
 
 	<body class="bg-dark">
@@ -20,13 +20,13 @@
 		</div>
 
 		<div class="container-fluid">
-			<form action="config.html" method="GET">
+			<form action="/authentication" method="POST">
 				<div class="row d-flex justify-content-center mx-5">
 					<div class="col-sm-12 col-md-2 d-flex justify-content-sm-center justify-content-md-end align-items-center">
 						<label class="h6 text-light" for="token">Autentifiquese</label>
 					</div>
 					<div class="col-sm-12 col-md-5">
-						<input class="form-control" id="token" placeholder="Ingrese su token de seguridad" type="text">
+						<input class="form-control" id="token" name="token" placeholder="Ingrese su token de seguridad" type="text">
 					</div>
 					<div class="col-sm-12 col-md-2 d-flex justify-content-sm-center justify-content-md-start">
 						<button type="submit" class="btn btn-primary">Entrar</button>
@@ -37,11 +37,11 @@
 
 
 		<!-- JQuery -->
-		<script src="static/jquery-3.2.1.min.js"></script>
+		<script src="/static/jquery-3.2.1.min.js"></script>
 		<!-- Popper -->
-		<script src="static/popper.min.js"></script>
+		<script src="/static/popper.min.js"></script>
 		<!-- Bootstrap JS -->
-		<script src="static/bootstrap-4.0.0-beta/js/bootstrap.min.js"></script>
+		<script src="/static/bootstrap.min.js"></script>
 		<style>input, input[placeholder]{text-align:center;}</style>
 
 	</body>

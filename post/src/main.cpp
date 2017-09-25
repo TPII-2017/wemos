@@ -8,13 +8,10 @@
 ESP8266WebServer server(80); //server init, port 80
 
 void serial_print_matrix(){
-    for(int row = 0; row < ROWS; row++){
-        for(int column = 0; column < COLUMNS; column++){
-            if(matrix[row][column] == 1){
-                Serial.print("X");                
-            }else{
-                Serial.print(" ");
-            }
+    char row, column;
+    for(row = 0; row < ROWS; row++){
+        for(column = 0; column < COLUMNS; column++){
+            Serial.print(matrix[row][column]);
         }
         Serial.println("");
     }
@@ -35,7 +32,7 @@ void handleMatrix(){
     for(int row = 0; row < ROWS; row++){
         for(int column = 0; column < COLUMNS; column++){
             String aux= String(row) + "-" + String(column);
-            matrix[row][column] = server.arg(aux)=="1"?1:0;
+            matrix[row][column] = server.arg(aux)=="1"?'X':'.';
         }
     }
     serial_print_matrix();   
@@ -47,9 +44,9 @@ void handleArgs(){
     String phrase = server.arg("chars");
     Serial.print("Caracteres pasados: ");
     Serial.println(phrase);
-    char aux[4];
-    phrase.toCharArray(aux, 4);
-    //ledmatrix_set_str(aux);
+    char aux[5];
+    phrase.toCharArray(aux, 5);
+    ledmatrix_set_str(aux);
     serial_print_matrix(); 
     //redirect to root "/"
     server.sendHeader("Location", String("/"), true);

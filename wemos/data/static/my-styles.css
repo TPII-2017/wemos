@@ -1,6 +1,9 @@
 input[type='checkbox'] {
 	margin-right:8px;
 }
+input, input[placeholder]{
+	text-align:center;
+}
 input[type='checkbox']:after {
 	width: 20px;
 	height: 20px;

@@ -6,10 +6,6 @@ char matrix [ROWS][COLUMNS];
 void ledmatrix_set_char(char, char);
 void ledmatrix_clean(void);
 
-void ledmatrix_test(void){
-	char i=3;
-}
-
 void ledmatrix_set_str(char * str){
 	ledmatrix_clean();
 	for(char i = 0; i < strlen(str); i++){

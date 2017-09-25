@@ -9,6 +9,5 @@
 extern char matrix [ROWS][COLUMNS];
 
 void ledmatrix_set_str(char *);
-void ledmatrix_test(void);
 
 #endif

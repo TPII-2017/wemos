@@ -30,6 +30,13 @@ input[type='checkbox']:checked:after {
 	visibility: visible;
 	border: 2px solid white;
 }
+
+.abs-center-x {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
 .matrix {
 	overflow: hidden;
 	min-width: 510px;

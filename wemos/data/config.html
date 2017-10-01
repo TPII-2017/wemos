@@ -46,47 +46,45 @@
 
 	<div class="container-fluid">
 		<div class="row justify-content-center">
-			<button class="btn btn-sm btn-info m-1" id="btn-phrase">
+			<button class="btn btn-md btn-info m-1" id="btn-phrase">
 					Caracteres
 				</button>
-			<button class="btn btn-sm btn-info m-1" id="btn-matrix">
+			<button class="btn btn-md btn-info m-1" id="btn-matrix">
 					LED a LED
 				</button>
-			<button class="btn btn-sm btn-info m-1" id="btn-predef">
+			<button class="btn btn-md btn-info m-1" id="btn-predef">
 					Predefinido
 				</button>
 		</div>
 	</div>
-
+	<br>
 	<div class="container">
-		
-		<div class="text-center accordion-panel" id="info-phrase">
-			<div class="d-flex justify-content-center">
-				<div class="col-md-6">
-					<div class="card bg-light">
-						<div class="card-header">Escriba los caracteres a mostrar</div>
-						<div class="card-body">
-							<form action="/phrase" method="POST">
-								<div class="text-center p-2">
-									<input class="form-control" id="texto" name="phrase" placeholder="Ingrese caracteres" type="text" maxlength="4">
-								</div>
-								<div class="text-center">
-									<button type="submit" class="btn btn-primary">Enviar</button>
-								</div>
-							</form>
-						</div>
+		<div class="row accordion-panel justify-content-center" id="info-phrase">
+			<div class="col-lg-8 col-md-10 col-sm-12 col-xs-12">
+				<div class="card bg-light text-center">
+					<div class="card-header">Escriba los caracteres a mostrar</div>
+					<div class="card-body">
+						<form action="/phrase" method="POST">
+							<div class="text-center p-2">
+								<input class="form-control" id="texto" name="phrase" placeholder="Ingrese caracteres" type="text" maxlength="4">
+							</div>
+							<div class="text-center">
+								<button type="submit" class="btn btn-primary">Enviar</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-
-		<div class="text-center accordion-panel" id="info-matrix">
-			<div class="d-flex justify-content-center">
-				<div class="card bg-light">
+	</div>
+	<div class="container">
+		<div class="row text-center accordion-panel d-flex justify-content-center" id="info-matrix">
+			<div class="col-lg-8 col-md-10 col-sm-12 col-xs-12">
+				<div class="card bg-light" style="max-height: 520px">
 					<div class="card-header">Elija los LEDs a prender</div>
 					<div class="card-body">
 						<form action="/matrix" method="POST">
-							<div class="justify-content-center row">
+							<div class="justify-content-center row" style="overflow:auto">
 								<div class="matrix text-center">
 									<input type='checkbox' value=1 name='0-0'><input type='checkbox' value=1 name='0-1'><input type='checkbox' value=1 name='0-2'><input type='checkbox' value=1 name='0-3'><input type='checkbox' value=1 name='0-4'><input type='checkbox' value=1 name='0-5'><input type='checkbox' value=1 name='0-6'><input type='checkbox' value=1 name='0-7'><input type='checkbox' value=1 name='0-8'><input type='checkbox' value=1 name='0-9'><input type='checkbox' value=1 name='0-10'><input type='checkbox' value=1 name='0-11'><input type='checkbox' value=1 name='0-12'><input type='checkbox' value=1 name='0-13'><input type='checkbox' value=1 name='0-14'><input type='checkbox' value=1 name='0-15'><input type='checkbox' value=1 name='0-16'><input type='checkbox' value=1 name='0-17'><input type='checkbox' value=1 name='0-18'><input type='checkbox' value=1 name='0-19'><input type='checkbox' value=1 name='0-20'><input type='checkbox' value=1 name='0-21'><input type='checkbox' value=1 name='0-22'><input type='checkbox' value=1 name='0-23'><br>
 									<input type='checkbox' value=1 name='1-0'><input type='checkbox' value=1 name='1-1'><input type='checkbox' value=1 name='1-2'><input type='checkbox' value=1 name='1-3'><input type='checkbox' value=1 name='1-4'><input type='checkbox' value=1 name='1-5'><input type='checkbox' value=1 name='1-6'><input type='checkbox' value=1 name='1-7'><input type='checkbox' value=1 name='1-8'><input type='checkbox' value=1 name='1-9'><input type='checkbox' value=1 name='1-10'><input type='checkbox' value=1 name='1-11'><input type='checkbox' value=1 name='1-12'><input type='checkbox' value=1 name='1-13'><input type='checkbox' value=1 name='1-14'><input type='checkbox' value=1 name='1-15'><input type='checkbox' value=1 name='1-16'><input type='checkbox' value=1 name='1-17'><input type='checkbox' value=1 name='1-18'><input type='checkbox' value=1 name='1-19'><input type='checkbox' value=1 name='1-20'><input type='checkbox' value=1 name='1-21'><input type='checkbox' value=1 name='1-22'><input type='checkbox' value=1 name='1-23'><br>
@@ -98,7 +96,7 @@
 									<input type='checkbox' value=1 name='7-0'><input type='checkbox' value=1 name='7-1'><input type='checkbox' value=1 name='7-2'><input type='checkbox' value=1 name='7-3'><input type='checkbox' value=1 name='7-4'><input type='checkbox' value=1 name='7-5'><input type='checkbox' value=1 name='7-6'><input type='checkbox' value=1 name='7-7'><input type='checkbox' value=1 name='7-8'><input type='checkbox' value=1 name='7-9'><input type='checkbox' value=1 name='7-10'><input type='checkbox' value=1 name='7-11'><input type='checkbox' value=1 name='7-12'><input type='checkbox' value=1 name='7-13'><input type='checkbox' value=1 name='7-14'><input type='checkbox' value=1 name='7-15'><input type='checkbox' value=1 name='7-16'><input type='checkbox' value=1 name='7-17'><input type='checkbox' value=1 name='7-18'><input type='checkbox' value=1 name='7-19'><input type='checkbox' value=1 name='7-20'><input type='checkbox' value=1 name='7-21'><input type='checkbox' value=1 name='7-22'><input type='checkbox' value=1 name='7-23'><br>
 								</div>
 							</div>
-							<div class="col-12 d-flex justify-content-center p-3">
+							<div class="row p-2 justify-content-center">
 								<button type="submit" class="btn btn-primary">Enviar</button>
 							</div>
 						</form>
@@ -106,27 +104,26 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="text-center accordion-panel" id="info-predef">
-			<div class="d-flex justify-content-center">
-				<div class="col-md-6 col-lg-8">
-					<div class="card bg-light">
-						<div class="card-header">Elija la opción a mostrar</div>
-						<div class="card-body">
-							<form action="/predefined" method="POST">
-								<div class="img-selector">
-									<input id="smile-face" type="radio" name="image-predif" value="smile-face" />
-									<label class="image-selec" for="smile-face"><div id="pixelart-smile-face"></div></label>
-									<input id="pacman" type="radio" name="image-predif" value="pacman" />
-									<label class="image-selec" for="pacman"><div id="pixelart-pacman"></div></label>
-									<input id="new-life" type="radio" name="image-predif" value="new-life" />
-									<label class="image-selec" for="new-life"><div id="pixelart-new-life"></div></label>
-								</div>
-								<div class="text-center">
-									<button type="submit" class="btn btn-primary">Enviar</button>
-								</div>
-							</form>
-						</div>
+	</div>
+	<div class="container">
+		<div class="row text-center accordion-panel d-flex justify-content-center" id="info-predef">
+			<div class="col-lg-8 col-md-10 col-sm-12 col-xs-12">
+				<div class="card bg-light">
+					<div class="card-header">Elija la opción a mostrar</div>
+					<div class="card-body">
+						<form action="/predefined" method="POST">
+							<div class="img-selector">
+								<input id="smile-face" type="radio" name="image-predif" value="smile-face" />
+								<label class="image-selec" for="smile-face"><div id="pixelart-smile-face"></div></label>
+								<input id="pacman" type="radio" name="image-predif" value="pacman" />
+								<label class="image-selec" for="pacman"><div id="pixelart-pacman"></div></label>
+								<input id="new-life" type="radio" name="image-predif" value="new-life" />
+								<label class="image-selec" for="new-life"><div id="pixelart-new-life"></div></label>
+							</div>
+							<div class="row p-2 justify-content-center">
+								<button type="submit" class="btn btn-primary">Enviar</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>

@@ -10,39 +10,44 @@ struct sourceT {
 	string name;
 	string call;
 };
-
 /* 
- * Se asume que el archivo va a estar en la carpeta del mismo nombre
- * que la dependencia, ej:
- * 			accordion.js va a estar en "js/accordion.js"
+ * Se asume que el archivo (js, css) va a estar en la carpeta con nombre
+ * de la constante PATH y la extensión, ej:
+ * 			accordion.js va a estar en "{const PATH}/js/accordion.js"
  */
 const int CANT_DEP = 4;
 const sourceT dep[CANT_DEP] = {
-				{"js","accordion", "<script src=\"js/accordion.js\"></script>"},
-				{"js","navbar", "<script src=\"js/navbar.js\"></script>"},
-				{"css","bootstrap.min", "<link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">"},
-				{"css","my-styles", "<link href=\"css/my-styles.css\" rel=\"stylesheet\">"}
-				};
+		{"js","accordion", "<script src=\"js/accordion.js\"></script>"},
+		{"js","navbar", "<script src=\"js/navbar.js\"></script>"},
+		{"css","bootstrap.min", "<link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">"},
+		{"css","my-styles", "<link href=\"css/my-styles.css\" rel=\"stylesheet\">"}
+	};
 
-const string path = "outputs/";
-string name;
+string PATH;
+string NAME_FILE;
 
-inline bool file_exist(string n);
 int is_dependence(string line);
-inline string blockHtml(string type, bool begin);
+inline string block_html(string type, bool begin);
 inline void add_dependence(ofstream &newFile, sourceT dep);
 void import_sources(ofstream &newFile, ifstream &file);
 
-/* 1er nombre del archivo*/
+/*
+ * 1er param es el path donde estara las dependencias y
+ * 2do param es el nombre del archivo con extensión.
+ */
 int main(int argc, char* argv[])
 {	
-	if (argc != 2)
+	if (argc != 3)
+	{
+		cout << " - Solo un parametro:";
+		cout << " nombre del archivo con su extensión." << std::endl;
 		return 0;
-	name = argv[1];
+	}
+	PATH = argv[1];
+	NAME_FILE = argv[2];
 
-	cout << (path+name) << std::endl;
-	ofstream newFile((path+name).c_str());
-	ifstream file(name.c_str());
+	ofstream newFile((PATH+"/"+NAME_FILE).c_str());
+	ifstream file(NAME_FILE.c_str());
 	
 	if (newFile.is_open())
 	{	
@@ -52,21 +57,16 @@ int main(int argc, char* argv[])
 	}
 }
 
-inline bool file_exist(string n) {
-	ifstream f(n.c_str());
-	return f.good();
-}
-
 void import_sources(ofstream &newFile, ifstream &file){
 	string line;
 	bool stop = false;
-	int index_dep;
+	int indexDep;
 
 	while (getline(file, line))
 	{	
-		index_dep = is_dependence(line);
-		if (index_dep != -1) // Si hay una dependencia lo agrega
-			add_dependence(newFile, dep[index_dep]);
+		indexDep = is_dependence(line);
+		if (indexDep != -1) // Si hay una dependencia lo agrega
+			add_dependence(newFile, dep[indexDep]);
 		else
 			newFile << line << std::endl;
 	}
@@ -74,11 +74,11 @@ void import_sources(ofstream &newFile, ifstream &file){
 
 inline void add_dependence(ofstream &newFile, sourceT dep){
 	string line;
-	ifstream sourceFile((dep.type + "/" + dep.name + "." + dep.type).c_str());
-	newFile << blockHtml(dep.type, 1) << std::endl;
+	ifstream sourceFile((PATH+"/"+dep.type+"/"+dep.name+"."+dep.type).c_str());
+	newFile << block_html(dep.type, 1) << std::endl;
 	while (getline(sourceFile, line))
 		newFile << line << std::endl;
-	newFile << blockHtml(dep.type, 0) << std::endl;
+	newFile << block_html(dep.type, 0) << std::endl;
 	sourceFile.close();
 }
 
@@ -92,10 +92,9 @@ int is_dependence(string line){
 	return -1;
 }
 
-inline string blockHtml(string type, bool begin){
-	if (begin){
+inline string block_html(string type, bool begin){
+	if (begin)
 		return (type == "js")? "<script>" : "<style>";
-	}else{
+	else
 		return (type == "js")? "</script>" : "</style>";
-	}
 }

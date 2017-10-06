@@ -1,4 +1,3 @@
-
 document.getElementById("btn-phrase").onclick = function () {
 	document.getElementById('info-matrix').style.maxHeight = null;
 	document.getElementById('info-predef').style.maxHeight = null;

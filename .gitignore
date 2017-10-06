@@ -2,3 +2,6 @@
 **/.pioenvs
 **/.piolibdeps
 **/.travis.yml
+web/outputs/
+web/merge
+**/*.gz

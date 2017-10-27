@@ -10,7 +10,7 @@ do
 	# Creo el archivo si no existe
 	touch "${path}/${dep}"
 	# Elimino los espacios, tabulaciones y saltos de linea
-	cat "${dep}" | tr -d " \t\n\r" > "${path}/${dep}"
+	cat "${dep}" > "${path}/${dep}"
 done
 
 files=("config.html" "authentication.html" "admin.html")
@@ -23,3 +23,4 @@ do
 	# Los mando a el wemos
 	mv -f "${path}/${item}.gz" "../wemos/data/${item}.gz"
 done
+rm -rf ${path}

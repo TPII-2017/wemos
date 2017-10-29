@@ -1,6 +1,16 @@
 input[type='checkbox'] {
 	margin-right:8px;
 }
+
+div.accordion-panel {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.2s ease-out;
+}
+nav.navbar {
+	background-color: #17a2b8;
+}
+
 input, input[placeholder]{
 	text-align:center;
 }

@@ -2,7 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WiFiClient.h> 
-#include "AP_SSID.h"
+#include "ap_ssid.h"
 #include "ledmatrix.h"
 #include "FileManager.h"
 #include "authentication.h"
@@ -75,11 +75,9 @@ void handle_index()
 
 void handle_admin()
 {
-	//server.sendHeader("Content-Encoding", "gzip");
 	File f = SPIFFS.open("/admin.html.gz", "r");
 	server.streamFile(f, "text/html");
 	f.close();
-	//server.send(200, "text/html", admin_html_file);
 }
 
 void handleNotFound()

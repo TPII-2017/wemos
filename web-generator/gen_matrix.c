@@ -11,7 +11,7 @@ int main(int argc, const char* argv[])
 	}
 	int c;
 	int r;
-	const char *item = "<input type='checkbox' id='%d-%d'>";
+	const char *item = "<input type='checkbox' value=1 name='%d-%d'>";
 	const char *newline = "<br>\n";
 	int row = atoi(argv[1]);
 	int colum = atoi(argv[2]);

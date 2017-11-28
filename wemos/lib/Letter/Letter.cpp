@@ -312,7 +312,7 @@ void Letter::predefinedTick()
 			countWithModule1(base->predefined.spriteIndex, base->predefined.spritesCount, true);
 
 		if(hasToSlide)
-			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, true);
+			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, (base->srate < 0));
 	}
 }
 

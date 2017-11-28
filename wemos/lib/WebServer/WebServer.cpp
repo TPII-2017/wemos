@@ -12,6 +12,8 @@ static ESP8266WebServer server(80);
 
 void WebServer::init()
 {
+	Serial.begin(115200);
+
 	SPIFFS.begin();
 
 	WiFi.mode(WIFI_AP);
@@ -90,8 +92,9 @@ void WebServer::handlePostPhrase()
 	uint8_t size = value.length() + 1;
 	char message[size];
 	value.toCharArray(message, size);
+	int16_t slideRate = server.arg("sliderate").toInt();
 	
-	Letter::setMessage(message, size - 1, 0);
+	Letter::setMessage(message, size - 1, slideRate);
 
 	server.sendHeader("Location", String("/"), true);
 	server.send(302, "text/plain", "");
@@ -99,16 +102,17 @@ void WebServer::handlePostPhrase()
 
 void WebServer::handlePostMatrix()
 {
-	uint8_t columns[3 * MAX_COLUMNS];
+	uint8_t columns[2 * MAX_COLUMNS];
 
-	for (uint8_t x = 0; x < 3 * MAX_COLUMNS; x++) {
+	for (uint8_t x = 0; x < 2 * MAX_COLUMNS; x++) {
 		columns[x] = 0;
 		for (int8_t y = MAX_COLUMNS - 1; y >= 0 ; y--) {
 			columns[x] |= (server.arg(String(y) + "-" + String(x)) == "1" ? 1 : 0) << y;
 		}
+		Serial.print(x); Serial.print(" = "); Serial.println(columns[x]);
 	}
 
-	Letter::setMap(columns, 3 * MAX_COLUMNS, 0);
+	Letter::setMap(columns, 2 * MAX_COLUMNS, -100);
 	
 	server.sendHeader("Location", String("/"), true);
 	server.send(302, "text/plain", "");
@@ -119,9 +123,9 @@ void WebServer::handlePostPredefined()
 	String value = server.arg("image-predif");
 
 	if (value.equals("smile-face"))
-		Letter::setPredefined(Letter::predefined_t::smile, 0);
+		Letter::setPredefined(Letter::predefined_t::smile, 200);
 	else if (value.equals("pacman"))
-		Letter::setPredefined(Letter::predefined_t::pacman, 0);
+		Letter::setPredefined(Letter::predefined_t::pacman, -200);
 	else if (value.equals("new-life"))
 		Letter::setPredefined(Letter::predefined_t::newLife, 0);
 	else

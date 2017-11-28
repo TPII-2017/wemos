@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#define LETTERS_COUNT		1
+
 #define MAX_COLUMNS		8
 #define MAX_LETTERS		32
 #define MESSAGE_SIZE	6
@@ -36,7 +38,7 @@ private:
 	static uint8_t mLetterCount;
 	static uint8_t mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];
 	static type_t mType;
-	static char mRaw[12];
+	static char mRaw[14];
 
 	// El comando se envia a todos los MAX7219 conectados en el circuito. No se
 	// debe utilizar para setear individualmente una columna de un MAX7219.

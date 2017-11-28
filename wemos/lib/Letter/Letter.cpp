@@ -72,7 +72,7 @@ struct base_t {
 
 uint8_t 		Letter::mLetterCount;
 uint8_t			Letter::mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];
-char			Letter::mRaw[12];
+char			Letter::mRaw[14];
 Letter::type_t	Letter::mType;
 
 // Realiza la copia desde el puntero src, hasta dst, indicando cuantos bytes se
@@ -231,10 +231,12 @@ void Letter::messageTick()
 		digitalWrite(SS, HIGH);
 	}
 
-	if (base->srate)
+	if (base->srate) {
 		countWithModule2(base->text.columnIndex, MAX_COLUMNS, base->text.letterIndex, base->text.textLength, (base->srate < 0));
-	else
+		//delay((base->srate < 0) ? -base->srate : base->srate);
+	} else {
 		mType = type_t::noType;
+	}
 	
 }
 
@@ -312,7 +314,7 @@ void Letter::predefinedTick()
 			countWithModule1(base->predefined.spriteIndex, base->predefined.spritesCount, true);
 
 		if(hasToSlide)
-			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, (base->srate < 0));
+			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, (base->srate > 0));
 	}
 }
 

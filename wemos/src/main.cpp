@@ -1,15 +1,15 @@
 #include <Arduino.h>
-#include "server.h"
+#include <WebServer.h>
+#include <Letter.h>
 
 void setup()
 {
-	Serial.begin(115200);
-	server_setup();
-	// TODO: matrix_controller_setup();
+	Letter::init(1);
+	WebServer::init();
 }
 
 void loop()
 {
-	server_handler();
-	//TODO: matrix_controller_handler();
+	WebServer::tick();
+	Letter::tick();
 }

@@ -4,6 +4,11 @@
 /* 1er param = filas, 2do param = columnas */
 int main(int argc, const char* argv[])
 {
+	if (argc != 3) {
+		printf("Solo 2 argumentos.\n");
+		printf("- 1er arg fila, 2do arg columna.\n");
+		return -1;
+	}
 	int c;
 	int r;
 	const char *item = "<input type='checkbox' id='%d-%d'>";
@@ -24,7 +29,9 @@ int main(int argc, const char* argv[])
 	{
 		for(c=0; c<colum; c++)
 			fprintf(f, item, r, c);
-		fprintf(f, newline);
+		fprintf(f, "%s", newline);
 	}
 	fclose(f);
+
+	return 0;
 }

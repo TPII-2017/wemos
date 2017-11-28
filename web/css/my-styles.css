@@ -48,8 +48,8 @@ input[type='checkbox']:checked:after {
 }
 
 .matrix {
-	overflow: hidden;
-	min-width: 510px;
+	overflow: visible;
+	min-width: 350px;
 	display: block;
 }
 

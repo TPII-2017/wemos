@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Genero el exe que hace la union de las dependencias
+g++ merge.cpp -o merge
+
 path="outputs"
 
 dep_file=("css/bootstrap.min.css" "css/my-styles.css" "js/accordion.js" "js/navbar.js")

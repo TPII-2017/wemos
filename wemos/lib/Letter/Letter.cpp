@@ -2,6 +2,8 @@
 #include <SPI.h>
 #include <Font.h>
 
+#define TICKS	10
+
 static constexpr uint8_t MAX7219_REG_NOOP		= 0x0;
 static constexpr uint8_t MAX7219_REG_DIGIT0		= 0x1;
 static constexpr uint8_t MAX7219_REG_DIGIT1		= 0x2;
@@ -47,9 +49,6 @@ struct predefined_t {
 	// Contador de ticks, que determina cuantos ticks faltan para ejecutar un
 	// refrescado.
 	int16_t remainingRefreshTicks;
-	// Contador de ticks, que determina cuantos ticks faltan para ejecutar un
-	// slide.
-	int16_t remainingSlideTicks;
 	// La cantidad de columnas que tiene la animación.
 	uint8_t columnsCount;
 	// Representa la primera columna que se dibuja. Va desde 0 hasta columnsCount exclusive.
@@ -60,6 +59,9 @@ struct base_t {
 	// El valor esta en ms. El signo determina hacia donde se mueve. Negativo
 	// implica hacia la izquierda.
 	int16_t srate;
+	// Contador de ticks, que determina cuantos ticks faltan para ejecutar un
+	// slide.
+	int16_t remainingSlideTicks;
 	union {
 		text_t text;
 		map_t map;
@@ -130,6 +132,7 @@ void Letter::setMessage(const char* message, uint8_t stringLength, int16_t slide
 	base->text.message[maxSize] = 0;
 	
 	base->srate = slideRate;
+	base->remainingSlideTicks = 0;
 	base->text.textLength = maxSize;
 	base->text.letterIndex = mLetterCount - 1;
 	base->text.columnIndex = MAX_COLUMNS - 1;
@@ -149,6 +152,7 @@ void Letter::setMap(const uint8_t* columns, uint8_t columnsCount, int16_t slideR
 	
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
 	base->srate = slideRate;
+	base->remainingSlideTicks = 0;
 	base->map.columnsCount = (columnsCount < maxColumns) ? maxColumns : columnsCount;
 	base->map.columnIndex = 0;
 
@@ -168,7 +172,7 @@ void Letter::setPredefined(Letter::predefined_t pre, int16_t slideRate)
 	base->predefined.spritesCount = predefined_config[pre - 1][0];
 	base->predefined.fpms = predefined_config[pre - 1][1];
 	base->predefined.remainingRefreshTicks = 0;
-	base->predefined.remainingSlideTicks = (slideRate < 0) ? -slideRate : slideRate;
+	base->remainingSlideTicks = (slideRate < 0) ? -slideRate : slideRate;
 	base->predefined.columnsCount = mLetterCount * MAX_COLUMNS;
 	base->predefined.columnIndex = 0;
 	base->srate = slideRate;
@@ -194,11 +198,19 @@ void Letter::tick()
 	default:
 		break;
 	}
+
+	delay(TICKS);
 }
 
 void Letter::messageTick()
 {
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
+
+	base->remainingSlideTicks -= TICKS;
+	if (base->remainingSlideTicks > 0)
+		return;
+
+	base->remainingSlideTicks = (base->srate < 0) ? -base->srate : base->srate;
 
 	uint8_t i = base->text.columnIndex;
 	uint8_t I = base->text.letterIndex;
@@ -219,18 +231,22 @@ void Letter::messageTick()
 		digitalWrite(SS, HIGH);
 	}
 
-	if (base->srate) {
+	if (base->srate)
 		countWithModule2(base->text.columnIndex, MAX_COLUMNS, base->text.letterIndex, base->text.textLength, (base->srate < 0));
-		delay((base->srate < 0) ? -base->srate : base->srate);
-	} else {
+	else
 		mType = type_t::noType;
-	}
 	
 }
 
 void Letter::mapTick()
 {
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
+
+	base->remainingSlideTicks -= TICKS;
+	if (base->remainingSlideTicks > 0)
+		return;
+	
+	base->remainingSlideTicks = (base->srate < 0) ? -base->srate : base->srate;
 
 	for (uint8_t j = 1; j <= MAX_COLUMNS; j++) {
 		digitalWrite(SS, LOW);
@@ -245,27 +261,27 @@ void Letter::mapTick()
 		digitalWrite(SS, HIGH);
 	}
 
-	if (base->srate) {
+	if (base->srate)
 		countWithModule1(base->map.columnIndex, base->map.columnsCount, (base->srate < 0));
-		delay((base->srate < 0) ? -base->srate : base->srate);
-	} else {
+	else
 		mType = type_t::noType;
-	}
 }
 
 void Letter::predefinedTick()
 {
-
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
 	bool hasToRefresh = false;
 	bool hasToSlide = false;
-	if (--base->predefined.remainingRefreshTicks <= 0) {
+
+	base->predefined.remainingRefreshTicks -= TICKS;
+	if (base->predefined.remainingRefreshTicks <= 0) {
 		base->predefined.remainingRefreshTicks = base->predefined.fpms;
 		hasToRefresh = true;
 	}
 
-	if (base->srate && --base->predefined.remainingSlideTicks <= 0) {
-		base->predefined.remainingSlideTicks = (base->srate < 0) ? -base->srate : base->srate;
+	base->remainingSlideTicks -= TICKS;
+	if (base->srate && base->remainingSlideTicks <= 0) {
+		base->remainingSlideTicks = (base->srate < 0) ? -base->srate : base->srate;
 		hasToSlide = true;
 	}
 
@@ -298,8 +314,6 @@ void Letter::predefinedTick()
 		if(hasToSlide)
 			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, true);
 	}
-
-	delay(1);
 }
 
 static void countWithModule1(uint8_t &value, uint8_t maxValue, bool ascnd)

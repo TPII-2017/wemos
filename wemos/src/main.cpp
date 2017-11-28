@@ -2,9 +2,11 @@
 #include <WebServer.h>
 #include <Letter.h>
 
+#define LETTERS_COUNT		1
+
 void setup()
 {
-	Letter::init(1);
+	Letter::init(LETTERS_COUNT);
 	WebServer::init();
 }
 

@@ -2,8 +2,12 @@
 #include <SPI.h>
 #include <Font.h>
 
+// La cantidad de milisegundos que debe esperarse hasta ejecutarse un nuevo
+// tick del sistema.
 #define TICKS	10
 
+
+// Registros del MAX7219.
 static constexpr uint8_t MAX7219_REG_NOOP		= 0x0;
 static constexpr uint8_t MAX7219_REG_DIGIT0		= 0x1;
 static constexpr uint8_t MAX7219_REG_DIGIT1		= 0x2;
@@ -19,24 +23,34 @@ static constexpr uint8_t MAX7219_REG_SCANLIMIT	= 0xB;
 static constexpr uint8_t MAX7219_REG_SHUTDOWN	= 0xC;
 static constexpr uint8_t MAX7219_REG_TESTMODE	= 0xF;
 
+// La estructura que se utiliza para almacenar la información de configuración
+// cuando la petición corresponde a una frase.
 struct text_t {
 	// No incluye al caracter 0.
 	uint8_t textLength;
 	// El mensaje incluyendo al caracter 0.
 	char message[MESSAGE_SIZE + 1];
-	// Representa la última letra a dibujar. Va desde 0 hasta textLength exclusive.
+	// Representa la última letra a dibujar. Va desde 0 hasta textLength 
+	// exclusive.
 	uint8_t letterIndex;
-	// Representa la última columna de la letra a dibujar. Va desde 0 hasta MAX_COLUMNS exclusive.
+	// Representa la última columna de la letra a dibujar. Va desde 0 hasta 
+	// MAX_COLUMNS exclusive.
 	uint8_t columnIndex;
 }__attribute__((packed));
 
+
+// La estructura que se utiliza para almacenar la información de configuración
+// cuando la petición corresponde a una mapeo de leds.
 struct map_t {
 	// La cantidad de columnas que tiene el mapeo.
 	uint8_t columnsCount;
-	// Representa la primera columna que se dibuja. Va desde 0 hasta columnsCount exclusive.
+	// Representa la primera columna que se dibuja. Va desde 0 hasta columnsCount 
+	// exclusive.
 	uint8_t columnIndex;
 }__attribute__((packed));
 
+// La estructura que se utiliza para almacenar la información de configuración
+// cuando la petición corresponde a un sprite predefinido.
 struct predefined_t {
 	// Determina cual animación se está representando.
 	uint8_t sprite;
@@ -51,10 +65,14 @@ struct predefined_t {
 	int16_t remainingRefreshTicks;
 	// La cantidad de columnas que tiene la animación.
 	uint8_t columnsCount;
-	// Representa la primera columna que se dibuja. Va desde 0 hasta columnsCount exclusive.
+	// Representa la primera columna que se dibuja. Va desde 0 hasta 
+	// columnsCount exclusive.
 	uint8_t columnIndex;
 }__attribute__((packed));
 
+
+// La estructura base, que contiene información de configuración general a
+// todas las peticiones.
 struct base_t {
 	// El valor esta en ms. El signo determina hacia donde se mueve. Negativo
 	// implica hacia la izquierda.
@@ -86,11 +104,12 @@ static int strcpy_s(char *dest, unsigned int dmax, const char *src);
 static void countWithModule1(uint8_t &value, uint8_t maxValue, bool ascnd);
 
 // Realiza dos cuentas con módulo recursivamente.
-static void countWithModule2(uint8_t &seconds, uint8_t maxSeconds, uint8_t &minutes, uint8_t maxMinutes, bool ascnd);
+static void countWithModule2(uint8_t &s, uint8_t mxs, uint8_t &mn, uint8_t mxmn, bool ascnd);
 
-void Letter::init(uint8_t letterCount)
+
+void Letter::init()
 {
-	mLetterCount = letterCount;
+	mLetterCount = LETTERS_COUNT;
 	pinMode(SS, OUTPUT);
 	SPI.begin();
 	sendCommand(MAX7219_REG_TESTMODE, 0x00);	// No test mode
@@ -233,7 +252,6 @@ void Letter::messageTick()
 
 	if (base->srate) {
 		countWithModule2(base->text.columnIndex, MAX_COLUMNS, base->text.letterIndex, base->text.textLength, (base->srate < 0));
-		//delay((base->srate < 0) ? -base->srate : base->srate);
 	} else {
 		mType = type_t::noType;
 	}
@@ -256,8 +274,6 @@ void Letter::mapTick()
 		for (int8_t k = mLetterCount - 1; k >= 0; k--) {
 			uint16_t word = (j << 8) | mCommandBuffer[((j - 1) + k * MAX_COLUMNS + base->map.columnIndex ) % base->map.columnsCount];
 			SPI.transfer16(word);
-			// Serial.print("Address = "); Serial.print((word & 0xFF00) >> 8); Serial.print("\tValue = "); Serial.println(word & 0x00FF);
-			// Serial.println("====================================");
 		}
 		
 		digitalWrite(SS, HIGH);
@@ -298,9 +314,6 @@ void Letter::predefinedTick()
 			uint8_t address = (i % MAX_COLUMNS) + 1;
 			uint8_t value = predefined_values[base->predefined.sprite + base->predefined.spriteIndex][j];
 			SPI.transfer16(address << 8 | value & 0x00FF);
-
-			// Serial.print("Address = "); Serial.print(address); Serial.print("\tValue = "); Serial.println(value);
-			// Serial.println("====================================");
 
 			for(uint8_t k = 0; k < (i / MAX_COLUMNS) % mLetterCount; k++)
 				SPI.transfer16(address << 8 | 0x00);

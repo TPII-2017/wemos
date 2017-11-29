@@ -104,7 +104,8 @@ void WebServer::handlePostMatrix()
 	for (uint8_t x = 0; x < 2 * MAX_COLUMNS; x++) {
 		columns[x] = 0;
 		for (int8_t y = MAX_COLUMNS - 1; y >= 0 ; y--) {
-			columns[x] |= (server.arg(String(y) + "-" + String(x)) == "1" ? 1 : 0) << y;
+			String args = String(y) + "-" + String(x);
+			columns[x] |= (server.arg(args) == "1" ? 1 : 0) << y;
 		}
 	}
 
@@ -117,13 +118,14 @@ void WebServer::handlePostMatrix()
 void WebServer::handlePostPredefined()
 {
 	String value = server.arg("image-predif");
+	uint16_t srate = server.arg("sliderate").toInt();
 
 	if (value.equals("smile-face"))
-		Letter::setPredefined(Letter::predefined_t::smile, server.arg("sliderate").toInt());
+		Letter::setPredefined(Letter::predefined_t::smile, srate);
 	else if (value.equals("pacman"))
-		Letter::setPredefined(Letter::predefined_t::pacman, server.arg("sliderate").toInt());
+		Letter::setPredefined(Letter::predefined_t::pacman, srate);
 	else if (value.equals("new-life"))
-		Letter::setPredefined(Letter::predefined_t::newLife, server.arg("sliderate").toInt());
+		Letter::setPredefined(Letter::predefined_t::newLife, srate);
 	else
 		Letter::setPredefined(Letter::predefined_t::noPredefined, 0);
 

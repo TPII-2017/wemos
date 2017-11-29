@@ -139,18 +139,18 @@ void Letter::clearScreen()
 	}
 }
 
-void Letter::setMessage(const char* message, uint8_t stringLength, int16_t slideRate)
+void Letter::setMessage(const char* message, uint8_t strLen, int16_t srate)
 {
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
-	strcpy_s(base->text.message, stringLength + 1, message);
+	strcpy_s(base->text.message, strLen + 1, message);
 
-	uint8_t maxSize = (stringLength > mLetterCount) ? stringLength : mLetterCount;
+	uint8_t maxSize = (strLen > mLetterCount) ? strLen : mLetterCount;
 
-	for(int8_t j = stringLength; j < maxSize; j++)
+	for(int8_t j = strLen; j < maxSize; j++)
 		base->text.message[j] = ' ';
 	base->text.message[maxSize] = 0;
 	
-	base->srate = slideRate;
+	base->srate = srate;
 	base->remainingSlideTicks = 0;
 	base->text.textLength = maxSize;
 	base->text.letterIndex = mLetterCount - 1;
@@ -159,26 +159,26 @@ void Letter::setMessage(const char* message, uint8_t stringLength, int16_t slide
 	mType = type_t::message;
 }
 
-void Letter::setMap(const uint8_t* columns, uint8_t columnsCount, int16_t slideRate)
+void Letter::setMap(const uint8_t* cols, uint8_t colCnt, int16_t srate)
 {
-	for(uint8_t i = 0; i < columnsCount; i++) {
-		mCommandBuffer[i] = columns[i];
+	for(uint8_t i = 0; i < colCnt; i++) {
+		mCommandBuffer[i] = cols[i];
 	}
 	uint8_t maxColumns = mLetterCount * MAX_COLUMNS;
-	for(uint8_t i = columnsCount; i < maxColumns; i++) {
+	for(uint8_t i = colCnt; i < maxColumns; i++) {
 		mCommandBuffer[i] = 0x00;
 	}
 	
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
-	base->srate = slideRate;
+	base->srate = srate;
 	base->remainingSlideTicks = 0;
-	base->map.columnsCount = (columnsCount < maxColumns) ? maxColumns : columnsCount;
+	base->map.columnsCount = (colCnt < maxColumns) ? maxColumns : colCnt;
 	base->map.columnIndex = 0;
 
 	mType = type_t::map;
 }
 
-void Letter::setPredefined(Letter::predefined_t pre, int16_t slideRate)
+void Letter::setPredefined(Letter::predefined_t pre, int16_t srate)
 {
 	if (pre == noPredefined) {
 		mType = type_t::noType;
@@ -191,10 +191,10 @@ void Letter::setPredefined(Letter::predefined_t pre, int16_t slideRate)
 	base->predefined.spritesCount = predefined_config[pre - 1][0];
 	base->predefined.fpms = predefined_config[pre - 1][1];
 	base->predefined.remainingRefreshTicks = 0;
-	base->remainingSlideTicks = (slideRate < 0) ? -slideRate : slideRate;
+	base->remainingSlideTicks = (srate < 0) ? -srate : srate;
 	base->predefined.columnsCount = mLetterCount * MAX_COLUMNS;
 	base->predefined.columnIndex = 0;
-	base->srate = slideRate;
+	base->srate = srate;
 
 	mType = type_t::predefined;
 }
@@ -243,15 +243,18 @@ void Letter::messageTick()
 		digitalWrite(SS, LOW);
 		
 		for (uint8_t k = 0; k < mLetterCount; k++) {
-			uint16_t word = ((MAX_COLUMNS - (j - 1)) << 8) | mCommandBuffer[(j - 1) + k * MAX_COLUMNS];
-			SPI.transfer16(word);
+			uint16_t word = ((MAX_COLUMNS - (j - 1)) << 8);
+			uint8_t value = mCommandBuffer[(j - 1) + k * MAX_COLUMNS];
+			SPI.transfer16(word | value & 0x00FF);
 		}
 		
 		digitalWrite(SS, HIGH);
 	}
 
 	if (base->srate) {
-		countWithModule2(base->text.columnIndex, MAX_COLUMNS, base->text.letterIndex, base->text.textLength, (base->srate < 0));
+		countWithModule2(base->text.columnIndex, MAX_COLUMNS, 
+						base->text.letterIndex, base->text.textLength, 
+						(base->srate < 0));
 	} else {
 		mType = type_t::noType;
 	}
@@ -272,15 +275,19 @@ void Letter::mapTick()
 		digitalWrite(SS, LOW);
 		
 		for (int8_t k = mLetterCount - 1; k >= 0; k--) {
-			uint16_t word = (j << 8) | mCommandBuffer[((j - 1) + k * MAX_COLUMNS + base->map.columnIndex ) % base->map.columnsCount];
-			SPI.transfer16(word);
+			uint16_t word = (j << 8);
+			uint8_t value = mCommandBuffer[((j - 1) + k * MAX_COLUMNS + 
+					base->map.columnIndex ) % base->map.columnsCount];
+
+			SPI.transfer16(word | value & 0x00FF);
 		}
 		
 		digitalWrite(SS, HIGH);
 	}
 
 	if (base->srate)
-		countWithModule1(base->map.columnIndex, base->map.columnsCount, (base->srate < 0));
+		countWithModule1(base->map.columnIndex, base->map.columnsCount, 
+						(base->srate < 0));
 	else
 		mType = type_t::noType;
 }
@@ -299,7 +306,8 @@ void Letter::predefinedTick()
 
 	base->remainingSlideTicks -= TICKS;
 	if (base->srate && base->remainingSlideTicks <= 0) {
-		base->remainingSlideTicks = (base->srate < 0) ? -base->srate : base->srate;
+		base->remainingSlideTicks = (base->srate < 0) ? -base->srate : 
+									base->srate;
 		hasToSlide = true;
 	}
 
@@ -312,7 +320,9 @@ void Letter::predefinedTick()
 			digitalWrite(SS, LOW);
 
 			uint8_t address = (i % MAX_COLUMNS) + 1;
-			uint8_t value = predefined_values[base->predefined.sprite + base->predefined.spriteIndex][j];
+			uint8_t value = predefined_values[base->predefined.sprite + 
+							base->predefined.spriteIndex][j];
+
 			SPI.transfer16(address << 8 | value & 0x00FF);
 
 			for(uint8_t k = 0; k < (i / MAX_COLUMNS) % mLetterCount; k++)
@@ -324,10 +334,12 @@ void Letter::predefinedTick()
 		}
 
 		if (hasToRefresh)
-			countWithModule1(base->predefined.spriteIndex, base->predefined.spritesCount, true);
+			countWithModule1(base->predefined.spriteIndex, 
+							base->predefined.spritesCount, true);
 
 		if(hasToSlide)
-			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, (base->srate > 0));
+			countWithModule1(base->predefined.columnIndex, 
+							base->predefined.columnsCount, (base->srate > 0));
 	}
 }
 

@@ -11,7 +11,7 @@
 #define MAX_LETTERS		32
 // El tamaño máximo del mensaje que se puede escribir. Este valor no incluye al
 // caracter nulo.
-#define MESSAGE_SIZE	6
+#define MESSAGE_SIZE	25
 
 
 

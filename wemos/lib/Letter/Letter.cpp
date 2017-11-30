@@ -314,34 +314,37 @@ void Letter::predefinedTick()
 	}
 
 	if (hasToRefresh | hasToSlide) {
-		clearScreen();
-
 		uint8_t i = base->predefined.columnIndex;
 
-		for(uint8_t j = 0; j < MAX_COLUMNS; j++) {
-			digitalWrite(SS, LOW);
+		for(uint8_t j = 0; j < mLetterCount * MAX_COLUMNS; j++)
+			mCommandBuffer[j] = 0;
 
-			uint8_t address = (i % MAX_COLUMNS) + 1;
-			uint8_t value = predefined_values[base->predefined.sprite + 
-							base->predefined.spriteIndex][j];
-
-			SPI.transfer16(address << 8 | (value & 0x00FF));
-
-			for(uint8_t k = 0; k < (i / MAX_COLUMNS) % mLetterCount; k++)
-				SPI.transfer16(address << 8 | 0x00);
-
-			digitalWrite(SS, HIGH);
-
+		for (uint8_t j = 0; j < MAX_COLUMNS; j++) {
+			mCommandBuffer[i] = predefined_values[base->predefined.sprite + base->predefined.spriteIndex][j];
 			countWithModule1(i, base->predefined.columnsCount, true);
 		}
 
+		for(uint8_t j = 0; j < MAX_COLUMNS; j++) {
+
+			digitalWrite(SS, LOW);
+			for(int8_t k = mLetterCount - 1; k >= 0; k--) {
+
+				uint8_t address = j + 1;
+				uint8_t value = mCommandBuffer[k * MAX_COLUMNS + j];
+
+				SPI.transfer16(address << 8 | (value & 0x00FF));
+				Serial.print("Address = "); Serial.print(address); Serial.print("\tValue = "); Serial.println(value);
+
+			}
+			digitalWrite(SS, HIGH);
+
+		}
+
 		if (hasToRefresh)
-			countWithModule1(base->predefined.spriteIndex, 
-							base->predefined.spritesCount, true);
+			countWithModule1(base->predefined.spriteIndex, base->predefined.spritesCount, true);
 
 		if(hasToSlide)
-			countWithModule1(base->predefined.columnIndex, 
-							base->predefined.columnsCount, (base->srate > 0));
+			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, (base->srate > 0));
 	}
 }
 

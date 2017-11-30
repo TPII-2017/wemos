@@ -109,6 +109,8 @@ static void countWithModule2(uint8_t &s, uint8_t mxs, uint8_t &mn, uint8_t mxmn,
 
 void Letter::init()
 {
+	Serial.begin(115200);
+
 	mLetterCount = LETTERS_COUNT;
 	pinMode(SS, OUTPUT);
 	SPI.begin();
@@ -235,7 +237,7 @@ void Letter::messageTick()
 	uint8_t I = base->text.letterIndex;
 
 	for (uint8_t j = 0; j < mLetterCount * MAX_COLUMNS; j++) {
-		mCommandBuffer[j] = font[base->text.message[I]][i]; 
+		mCommandBuffer[j] = font[base->text.message[I] * MAX_COLUMNS + i]; 
 		countWithModule2(i, MAX_COLUMNS, I, base->text.textLength, false);		
 	}
 
@@ -323,7 +325,7 @@ void Letter::predefinedTick()
 			uint8_t value = predefined_values[base->predefined.sprite + 
 							base->predefined.spriteIndex][j];
 
-			SPI.transfer16(address << 8 | value & 0x00FF);
+			SPI.transfer16(address << 8 | (value & 0x00FF));
 
 			for(uint8_t k = 0; k < (i / MAX_COLUMNS) % mLetterCount; k++)
 				SPI.transfer16(address << 8 | 0x00);

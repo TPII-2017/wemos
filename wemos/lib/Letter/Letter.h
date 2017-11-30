@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 // Constante que define la cantidad de matrices de 8x8 se conectan al sistema.
-#define LETTERS_COUNT	1
+#define LETTERS_COUNT	2
 
 // La cantidad de columnas que tiene cada matriz de LEDs.
 #define MAX_COLUMNS		8

@@ -13,6 +13,8 @@
 // caracter nulo.
 #define MESSAGE_SIZE	25
 
+#define RAW_DATA_SIZE	33
+
 
 
 // Esta clase es la encargada de controlar la matriz de LEDs, su principal
@@ -75,7 +77,7 @@ private:
 
 	// Un arreglo de bytes que posee toda la configuración necesearia que el 
 	// controlador necesita.
-	static char mRaw[14];
+	static char mRaw[RAW_DATA_SIZE];
 
 	// El comando se envia a todos los MAX7219 conectados en el circuito. No se
 	// debe utilizar para setear individualmente una columna de un MAX7219.

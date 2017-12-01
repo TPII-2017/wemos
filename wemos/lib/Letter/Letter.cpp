@@ -87,10 +87,12 @@ struct base_t {
 	};
 }__attribute__((packed));
 
+static_assert(sizeof(base_t) <= RAW_DATA_SIZE, "Error en la longitud de rawData");
+
 
 uint8_t 		Letter::mLetterCount;
 uint8_t			Letter::mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];
-char			Letter::mRaw[14];
+char			Letter::mRaw[RAW_DATA_SIZE];
 Letter::type_t	Letter::mType;
 
 // Realiza la copia desde el puntero src, hasta dst, indicando cuantos bytes se

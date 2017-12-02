@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 // Constante que define la cantidad de matrices de 8x8 se conectan al sistema.
-#define LETTERS_COUNT	1
+#define LETTERS_COUNT	2
 
 // La cantidad de columnas que tiene cada matriz de LEDs.
 #define MAX_COLUMNS		8
@@ -11,7 +11,9 @@
 #define MAX_LETTERS		32
 // El tamaño máximo del mensaje que se puede escribir. Este valor no incluye al
 // caracter nulo.
-#define MESSAGE_SIZE	6
+#define MESSAGE_SIZE	25
+
+#define RAW_DATA_SIZE	33
 
 
 
@@ -75,7 +77,7 @@ private:
 
 	// Un arreglo de bytes que posee toda la configuración necesearia que el 
 	// controlador necesita.
-	static char mRaw[14];
+	static char mRaw[RAW_DATA_SIZE];
 
 	// El comando se envia a todos los MAX7219 conectados en el circuito. No se
 	// debe utilizar para setear individualmente una columna de un MAX7219.

@@ -87,10 +87,12 @@ struct base_t {
 	};
 }__attribute__((packed));
 
+static_assert(sizeof(base_t) <= RAW_DATA_SIZE, "Error en la longitud de rawData");
+
 
 uint8_t 		Letter::mLetterCount;
 uint8_t			Letter::mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];
-char			Letter::mRaw[14];
+char			Letter::mRaw[RAW_DATA_SIZE];
 Letter::type_t	Letter::mType;
 
 // Realiza la copia desde el puntero src, hasta dst, indicando cuantos bytes se
@@ -109,6 +111,8 @@ static void countWithModule2(uint8_t &s, uint8_t mxs, uint8_t &mn, uint8_t mxmn,
 
 void Letter::init()
 {
+	Serial.begin(115200);
+
 	mLetterCount = LETTERS_COUNT;
 	pinMode(SS, OUTPUT);
 	SPI.begin();
@@ -235,7 +239,7 @@ void Letter::messageTick()
 	uint8_t I = base->text.letterIndex;
 
 	for (uint8_t j = 0; j < mLetterCount * MAX_COLUMNS; j++) {
-		mCommandBuffer[j] = font[base->text.message[I]][i]; 
+		mCommandBuffer[j] = font[base->text.message[I] * MAX_COLUMNS + i]; 
 		countWithModule2(i, MAX_COLUMNS, I, base->text.textLength, false);		
 	}
 
@@ -312,34 +316,37 @@ void Letter::predefinedTick()
 	}
 
 	if (hasToRefresh | hasToSlide) {
-		clearScreen();
-
 		uint8_t i = base->predefined.columnIndex;
 
-		for(uint8_t j = 0; j < MAX_COLUMNS; j++) {
-			digitalWrite(SS, LOW);
+		for(uint8_t j = 0; j < mLetterCount * MAX_COLUMNS; j++)
+			mCommandBuffer[j] = 0;
 
-			uint8_t address = (i % MAX_COLUMNS) + 1;
-			uint8_t value = predefined_values[base->predefined.sprite + 
-							base->predefined.spriteIndex][j];
-
-			SPI.transfer16(address << 8 | value & 0x00FF);
-
-			for(uint8_t k = 0; k < (i / MAX_COLUMNS) % mLetterCount; k++)
-				SPI.transfer16(address << 8 | 0x00);
-
-			digitalWrite(SS, HIGH);
-
+		for (uint8_t j = 0; j < MAX_COLUMNS; j++) {
+			mCommandBuffer[i] = predefined_values[base->predefined.sprite + base->predefined.spriteIndex][j];
 			countWithModule1(i, base->predefined.columnsCount, true);
 		}
 
+		for(uint8_t j = 0; j < MAX_COLUMNS; j++) {
+
+			digitalWrite(SS, LOW);
+			for(int8_t k = mLetterCount - 1; k >= 0; k--) {
+
+				uint8_t address = j + 1;
+				uint8_t value = mCommandBuffer[k * MAX_COLUMNS + j];
+
+				SPI.transfer16(address << 8 | (value & 0x00FF));
+				Serial.print("Address = "); Serial.print(address); Serial.print("\tValue = "); Serial.println(value);
+
+			}
+			digitalWrite(SS, HIGH);
+
+		}
+
 		if (hasToRefresh)
-			countWithModule1(base->predefined.spriteIndex, 
-							base->predefined.spritesCount, true);
+			countWithModule1(base->predefined.spriteIndex, base->predefined.spritesCount, true);
 
 		if(hasToSlide)
-			countWithModule1(base->predefined.columnIndex, 
-							base->predefined.columnsCount, (base->srate > 0));
+			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, (base->srate > 0));
 	}
 }
 

@@ -154,6 +154,7 @@ void Letter::clearScreen()
 	for(uint8_t i = 0; i < MAX_COLUMNS; i++) {
 		sendCommand(MAX7219_REG_DIGIT0 + i, 0x00);
 	}
+	mType = noType;
 }
 
 void Letter::setMessage(const char* message, uint8_t strLen, int16_t srate)
@@ -176,8 +177,6 @@ void Letter::setMessage(const char* message, uint8_t strLen, int16_t srate)
 	base->text.letterIndex = mLetterCount - 1;
 	base->text.columnIndex = MAX_COLUMNS - 1;
 
-	if (mType == type_t::party)
-		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
 	mType = type_t::message;
 }
 
@@ -200,8 +199,6 @@ void Letter::setMap(const uint8_t* cols, uint8_t colCnt, int16_t srate)
 	base->map.columnsCount = (colCnt < maxColumns) ? maxColumns : colCnt;
 	base->map.columnIndex = 0;
 
-	if (mType == type_t::party)
-		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
 	mType = type_t::map;
 }
 
@@ -226,8 +223,6 @@ void Letter::setPredefined(Letter::predefined_t pre, int16_t srate)
 	base->predefined.columnIndex = 0;
 	base->srate = srate;
 
-	if (mType == type_t::party)
-		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
 	mType = type_t::predefined;
 }
 
@@ -418,7 +413,9 @@ void Letter::partyTick()
 	base->party.remainingTicks = base->party.ticks;
 
 	if (base->party.on) {
-		sendCommand(MAX7219_REG_SHUTDOWN, 0x00);
+		for(uint8_t i = 0; i < MAX_COLUMNS; i++)
+			sendCommand(MAX7219_REG_DIGIT0 + i, 0x00);
+
 		base->party.on = 0;
 	} else {
 		for (uint8_t j = 1; j <= MAX_COLUMNS; j++) {
@@ -430,7 +427,6 @@ void Letter::partyTick()
 			digitalWrite(SS, HIGH);
 
 		}
-		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
 		base->party.on = 1;
 	}
 }

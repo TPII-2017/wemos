@@ -69,6 +69,8 @@ public:
 	static void setIntensity(uint8_t intesity);
 
 	// Limpia la pantalla de todos los MAX7219 conectados en el circuito.
+	// Además limpia el último posteo realizado, de forma que no se siga
+	// ejecutando sus ticks.
 	static void clearScreen();
 
 	// Genera un tick al sistema, en base a la configuración de sus variables

@@ -25,6 +25,7 @@ const sourceT dep[CANT_DEP] = {
 
 string PATH;
 string NAME_FILE;
+string ASSETS_PATH;
 
 int is_dependence(string line);
 inline string block_html(string type, bool begin);
@@ -34,23 +35,26 @@ void import_sources(ofstream &newFile, ifstream &file);
 /*
  * 1er param es el path donde estara las dependencias y
  * 2do param es el nombre del archivo con extensión.
+ * 3er param es el path donde se encuentran los html
  */
 int main(int argc, char* argv[])
 {	
-	if (argc != 3)
+	if (argc != 4)
 	{
 		cout << " - Solo un parametro:";
 		cout << " nombre del archivo con su extensión." << std::endl;
 		return 0;
 	}
+
 	PATH = argv[1];
 	NAME_FILE = argv[2];
+	ASSETS_PATH = argv[3];
 
-	ofstream newFile((PATH+"/"+NAME_FILE).c_str());
-	ifstream file(NAME_FILE.c_str());
-	
+	ofstream newFile((PATH + "/" + NAME_FILE).c_str());
+	ifstream file((ASSETS_PATH + "/" + NAME_FILE).c_str());
+
 	if (newFile.is_open())
-	{	
+	{	 
 		import_sources(newFile, file);
 		newFile.close();
 		file.close();
@@ -59,7 +63,6 @@ int main(int argc, char* argv[])
 
 void import_sources(ofstream &newFile, ifstream &file){
 	string line;
-	bool stop = false;
 	int indexDep;
 
 	while (getline(file, line))

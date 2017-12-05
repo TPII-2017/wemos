@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Genero el exe que hace la union de las dependencias
+# Genero el ejecutable que hace la union de las dependencias
 g++ merge.cpp -o merge
 
 path="outputs"
+assets_path="assets"
 
 dep_file=("css/bootstrap.min.css" "css/my-styles.css" "js/accordion.js" "js/navbar.js")
 for dep in ${dep_file[*]}
@@ -13,14 +14,14 @@ do
 	# Creo el archivo si no existe
 	touch "${path}/${dep}"
 	# Elimino los espacios, tabulaciones y saltos de linea
-	cat "${dep}" > "${path}/${dep}"
+	cat "${assets_path}/${dep}" > "${path}/${dep}"
 done
 
 files=("config.html" "authentication.html" "admin.html")
 for item in ${files[*]}
 do
 	# Agrego las dependencias
-	./merge $path $item
+	./merge $path $item $assets_path
 	# Los comprimo
 	gzip -f "${path}/${item}"
 	# Los mando a el wemos

@@ -41,6 +41,8 @@ private:
 	static void handlePostMatrix();
 	// Maneja el POST del proceso de postear un sprite predefinido.
 	static void handlePostPredefined();
+	// Maneja el POST del proceso de partyOn.
+	static void handlePostPartyOn();
 	// Maneja el GET del proceso de index.
 	static void handleGetIndex();
 	// Maneja el POST del proceso de autenticación.

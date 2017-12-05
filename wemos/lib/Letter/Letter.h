@@ -52,6 +52,11 @@ public:
 	// que no corresponda, este método no realiza ninguna función.
 	static void setPredefined(predefined_t pre, int16_t slideRate);
 
+	// Inicia un modo donde enciende luces al azar y prende y apaga la pantalla
+	// de la matriz. En caso de que se ejecute por segunda vez, mantiene el
+	// mismo efecto.
+	static void setPartyOn();
+
 	// Genera un tick al sistema, en base a la configuración de sus variables
 	// privadas, determina si tiene que actualizar o no su buffer de salida. En
 	// caso de que la respuesta fuese sí, entonces debe enviar nuevamente la
@@ -63,7 +68,7 @@ private:
 	// Este tipo de dato determina el tipo de petición que se ha recibido desde
 	// el servidor WEB. En caso de no haber recibido ninguna, el valor por
 	// defecto es noType.
-	enum type_t{noType = 0, message, map, predefined};
+	enum type_t{noType = 0, message, map, predefined, party};
 
 	// La cantidad de matrices de LEDs de 8x8 conectadas en el sistema.
 	static uint8_t mLetterCount;
@@ -96,5 +101,9 @@ private:
 	// Es el método que controla el cartel, cuando lo que se seteó fue un 
 	// sprite predefinido.
 	static void predefinedTick();
+
+	// Es el método que controla el cartel, cuando lo que se seteó fue activar
+	// la fiesta.
+	static void partyTick();
 
 };

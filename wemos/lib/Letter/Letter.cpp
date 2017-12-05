@@ -70,6 +70,15 @@ struct predefined_t {
 	uint8_t columnIndex;
 }__attribute__((packed));
 
+struct party_t {
+	// Flag que determina si esta encendido o apagado.
+	uint8_t on;
+	// La cantidad de ticks restantes para tooglear.
+	int16_t remainingTicks;
+	// El valor por defecto.
+	int16_t ticks;
+}__attribute__((packed));
+
 
 // La estructura base, que contiene información de configuración general a
 // todas las peticiones.
@@ -84,6 +93,7 @@ struct base_t {
 		text_t text;
 		map_t map;
 		predefined_t predefined;
+		party_t party;
 	};
 }__attribute__((packed));
 
@@ -123,6 +133,7 @@ void Letter::init()
 	sendCommand(MAX7219_REG_SCANLIMIT, 0x07); 	// Scan all columns
 	clearScreen();
 	sendCommand(MAX7219_REG_SHUTDOWN, 0x01);	// Turn on
+	randomSeed(analogRead(0));
 	mType = noType;
 }
 
@@ -160,6 +171,8 @@ void Letter::setMessage(const char* message, uint8_t strLen, int16_t srate)
 	base->text.letterIndex = mLetterCount - 1;
 	base->text.columnIndex = MAX_COLUMNS - 1;
 
+	if (mType == type_t::party)
+		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
 	mType = type_t::message;
 }
 
@@ -179,6 +192,8 @@ void Letter::setMap(const uint8_t* cols, uint8_t colCnt, int16_t srate)
 	base->map.columnsCount = (colCnt < maxColumns) ? maxColumns : colCnt;
 	base->map.columnIndex = 0;
 
+	if (mType == type_t::party)
+		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
 	mType = type_t::map;
 }
 
@@ -200,7 +215,22 @@ void Letter::setPredefined(Letter::predefined_t pre, int16_t srate)
 	base->predefined.columnIndex = 0;
 	base->srate = srate;
 
+	if (mType == type_t::party)
+		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
 	mType = type_t::predefined;
+}
+
+void Letter::setPartyOn()
+{
+	if (mType == type_t::party)
+		return;
+
+	base_t* base = reinterpret_cast<base_t*>(mRaw);
+	base->party.on = 0;
+	base->party.remainingTicks = 0;
+	base->party.ticks = 250;
+
+	mType = type_t::party;
 }
 
 void Letter::tick()
@@ -216,6 +246,10 @@ void Letter::tick()
 
 	case type_t::predefined:
 		predefinedTick();
+		break;
+
+	case type_t::party:
+		partyTick();
 		break;
 
 	default:
@@ -347,6 +381,33 @@ void Letter::predefinedTick()
 
 		if(hasToSlide)
 			countWithModule1(base->predefined.columnIndex, base->predefined.columnsCount, (base->srate > 0));
+	}
+}
+
+void Letter::partyTick()
+{
+	base_t* base = reinterpret_cast<base_t*>(mRaw);
+	base->party.remainingTicks -= TICKS;
+	if (base->party.remainingTicks > 0)
+		return;
+
+	base->party.remainingTicks = base->party.ticks;
+
+	if (base->party.on) {
+		sendCommand(MAX7219_REG_SHUTDOWN, 0x00);
+		base->party.on = 0;
+	} else {
+		for (uint8_t j = 1; j <= MAX_COLUMNS; j++) {
+
+			digitalWrite(SS, LOW);
+			for(int8_t k = mLetterCount - 1; k >= 0; k--) {
+				SPI.transfer16(j << 8 | (random(256) & 0x00FF));
+			}
+			digitalWrite(SS, HIGH);
+
+		}
+		sendCommand(MAX7219_REG_SHUTDOWN, 0x01);
+		base->party.on = 1;
 	}
 }
 

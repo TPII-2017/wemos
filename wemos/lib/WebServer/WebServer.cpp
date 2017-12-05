@@ -27,6 +27,7 @@ void WebServer::init()
 	server.on("/phrase", HTTP_POST, handlePostPhrase);
 	server.on("/matrix", HTTP_POST, handlePostMatrix);
 	server.on("/predefined", HTTP_POST, handlePostPredefined);
+	server.on("/party", HTTP_POST, handlePostPartyOn);
 	server.on("/", HTTP_GET, handleGetIndex);
 	server.on("/admin", handleAdmin);
 	server.on("/static/favicon.png", HTTP_GET, handleGetFavicon);
@@ -82,6 +83,14 @@ void WebServer::handleGetAuthentication()
 	File f = SPIFFS.open("/authentication.html.gz", "r");
 	server.streamFile(f, "text/html");
 	f.close();
+}
+
+void WebServer::handlePostPartyOn()
+{
+	Letter::setPartyOn();
+	
+	server.sendHeader("Location", String("/"), true);
+	server.send(302, "text/plain", "");
 }
 
 void WebServer::handlePostPhrase()

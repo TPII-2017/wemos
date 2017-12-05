@@ -104,6 +104,7 @@ uint8_t 		Letter::mLetterCount;
 uint8_t			Letter::mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];
 char			Letter::mRaw[RAW_DATA_SIZE];
 Letter::type_t	Letter::mType;
+bool			Letter::mEnabled;
 
 // Realiza la copia desde el puntero src, hasta dst, indicando cuantos bytes se
 // quieren copiar. Mientras se realiza la copia, se busca en src un terminador 
@@ -135,6 +136,7 @@ void Letter::init()
 	sendCommand(MAX7219_REG_SHUTDOWN, 0x01);	// Turn on
 	randomSeed(analogRead(0));
 	mType = noType;
+	mEnabled = true;
 }
 
 void Letter::sendCommand(uint8_t address, uint8_t value)
@@ -156,6 +158,9 @@ void Letter::clearScreen()
 
 void Letter::setMessage(const char* message, uint8_t strLen, int16_t srate)
 {
+	if (!mEnabled)
+		return;
+
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
 	strcpy_s(base->text.message, strLen + 1, message);
 
@@ -178,6 +183,9 @@ void Letter::setMessage(const char* message, uint8_t strLen, int16_t srate)
 
 void Letter::setMap(const uint8_t* cols, uint8_t colCnt, int16_t srate)
 {
+	if (!mEnabled)
+		return;
+
 	for(uint8_t i = 0; i < colCnt; i++) {
 		mCommandBuffer[i] = cols[i];
 	}
@@ -199,6 +207,9 @@ void Letter::setMap(const uint8_t* cols, uint8_t colCnt, int16_t srate)
 
 void Letter::setPredefined(Letter::predefined_t pre, int16_t srate)
 {
+	if (!mEnabled)
+		return;
+
 	if (pre == noPredefined) {
 		mType = type_t::noType;
 		return;
@@ -222,6 +233,9 @@ void Letter::setPredefined(Letter::predefined_t pre, int16_t srate)
 
 void Letter::setPartyOn()
 {
+	if (!mEnabled)
+		return;
+		
 	if (mType == type_t::party)
 		return;
 
@@ -231,6 +245,16 @@ void Letter::setPartyOn()
 	base->party.ticks = 250;
 
 	mType = type_t::party;
+}
+
+void Letter::setEnabled(bool enabled)
+{
+	mEnabled = enabled;
+}
+
+void Letter::setIntensity(uint8_t intensity)
+{
+	sendCommand(MAX7219_REG_INTENSITY, intensity & 0x0F);
 }
 
 void Letter::tick()

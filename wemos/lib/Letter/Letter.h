@@ -57,6 +57,20 @@ public:
 	// mismo efecto.
 	static void setPartyOn();
 
+	// Habilita o deshabilita los posteos en la matriz. Deshabilitar implica
+	// mantener el estado actual de la matriz pero no permite realizar ninguna
+	// otra operación.
+	static void setEnabled(bool enabled);
+
+	// Setea la intensidad de todos los LED de los MAX2719. El valor 'intensity'
+	// que se recibe por parámetro especifica la intensidad de los leds en sus
+	// cuatro bits menos signficativos. Los otros cuatro bits no producen
+	// efecto alguno.
+	static void setIntensity(uint8_t intesity);
+
+	// Limpia la pantalla de todos los MAX7219 conectados en el circuito.
+	static void clearScreen();
+
 	// Genera un tick al sistema, en base a la configuración de sus variables
 	// privadas, determina si tiene que actualizar o no su buffer de salida. En
 	// caso de que la respuesta fuese sí, entonces debe enviar nuevamente la
@@ -73,6 +87,9 @@ private:
 	// La cantidad de matrices de LEDs de 8x8 conectadas en el sistema.
 	static uint8_t mLetterCount;
 
+	// Determina si permite nuevas operaciones.
+	static bool mEnabled;
+
 	// El buffer de salida que se envía mediante SPI hacia los chips MAX7219.
 	static uint8_t mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];
 
@@ -87,9 +104,6 @@ private:
 	// El comando se envia a todos los MAX7219 conectados en el circuito. No se
 	// debe utilizar para setear individualmente una columna de un MAX7219.
 	static void sendCommand(uint8_t address, uint8_t value);
-
-	// Limpia la pantalla de todos los MAX7219 conectados en el circuito.
-	static void clearScreen();
 
 	// Es el método que controla el cartel, cuando lo que se seteó fue un
 	// texto.

@@ -105,6 +105,7 @@ uint8_t			Letter::mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];
 char			Letter::mRaw[RAW_DATA_SIZE];
 Letter::type_t	Letter::mType;
 bool			Letter::mEnabled;
+uint8_t			Letter::mIntensity;
 
 // Realiza la copia desde el puntero src, hasta dst, indicando cuantos bytes se
 // quieren copiar. Mientras se realiza la copia, se busca en src un terminador 
@@ -128,7 +129,7 @@ void Letter::init()
 	sendCommand(MAX7219_REG_TESTMODE, 0x00);	// No test mode
 	sendCommand(MAX7219_REG_SHUTDOWN, 0x00); 	// Shutdown
 	sendCommand(MAX7219_REG_DECODEMODE, 0x00); 	// No decode
-	sendCommand(MAX7219_REG_INTENSITY, 0x06); 	// Medium intensity
+	setIntensity(0x0F);							// High intensity
 	sendCommand(MAX7219_REG_SCANLIMIT, 0x07); 	// Scan all columns
 	clearScreen();
 	sendCommand(MAX7219_REG_SHUTDOWN, 0x01);	// Turn on
@@ -247,9 +248,20 @@ void Letter::setEnabled(bool enabled)
 	mEnabled = enabled;
 }
 
+bool Letter::isEnabled()
+{
+	return mEnabled;
+}
+
 void Letter::setIntensity(uint8_t intensity)
 {
 	sendCommand(MAX7219_REG_INTENSITY, intensity & 0x0F);
+	mIntensity = intensity & 0x0F;
+}
+
+uint8_t Letter::getIntensity()
+{
+	return mIntensity;
 }
 
 void Letter::tick()

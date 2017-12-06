@@ -62,11 +62,17 @@ public:
 	// otra operación.
 	static void setEnabled(bool enabled);
 
+	// Devuelve el valor respecto a si el sistema está habilitado.
+	static bool isEnabled();
+
 	// Setea la intensidad de todos los LED de los MAX2719. El valor 'intensity'
 	// que se recibe por parámetro especifica la intensidad de los leds en sus
 	// cuatro bits menos signficativos. Los otros cuatro bits no producen
 	// efecto alguno.
 	static void setIntensity(uint8_t intesity);
+
+	// Devuelve el valor respecto a la intensidad.
+	static uint8_t getIntensity();
 
 	// Limpia la pantalla de todos los MAX7219 conectados en el circuito.
 	// Además limpia el último posteo realizado, de forma que no se siga
@@ -78,6 +84,8 @@ public:
 	// caso de que la respuesta fuese sí, entonces debe enviar nuevamente la
 	// información vía SPI hacia los distintos MAX7219.
 	static void tick();
+
+	
 
 private:
 
@@ -91,6 +99,9 @@ private:
 
 	// Determina si permite nuevas operaciones.
 	static bool mEnabled;
+
+	// Determina la intensidad de la matriz.
+	static uint8_t mIntensity;
 
 	// El buffer de salida que se envía mediante SPI hacia los chips MAX7219.
 	static uint8_t mCommandBuffer[MAX_COLUMNS * MAX_LETTERS];

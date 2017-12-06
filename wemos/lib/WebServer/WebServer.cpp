@@ -27,10 +27,12 @@ void WebServer::init()
 	server.on("/phrase", HTTP_POST, handlePostPhrase);
 	server.on("/matrix", HTTP_POST, handlePostMatrix);
 	server.on("/predefined", HTTP_POST, handlePostPredefined);
-	server.on("/party", HTTP_POST, handlePostPartyOn);
+	server.on("/party", HTTP_GET, handleGetPartyOn);
 	server.on("/", HTTP_GET, handleGetIndex);
-	server.on("/admin", handleAdmin);
+	server.on("/admin", HTTP_GET, handleGetAdmin);
 	server.on("/static/favicon.png", HTTP_GET, handleGetFavicon);
+	server.on("/admin", HTTP_POST, handlePostAdmin);
+	server.on("/clear", HTTP_GET, handleGetClear);
 
 	server.begin();
 }
@@ -55,7 +57,7 @@ void WebServer::handleGetIndex()
 	f.close();
 }
 
-void WebServer::handleAdmin()
+void WebServer::handleGetAdmin()
 {
 	File f = SPIFFS.open("/admin.html.gz", "r");
 	server.streamFile(f, "text/html");
@@ -85,11 +87,11 @@ void WebServer::handleGetAuthentication()
 	f.close();
 }
 
-void WebServer::handlePostPartyOn()
+void WebServer::handleGetPartyOn()
 {
 	Letter::setPartyOn();
 	
-	server.sendHeader("Location", String("/"), true);
+	server.sendHeader("Location", String("/admin"), true);
 	server.send(302, "text/plain", "");
 }
 
@@ -129,6 +131,8 @@ void WebServer::handlePostPredefined()
 	String value = server.arg("image-predif");
 	uint16_t srate = server.arg("sliderate").toInt();
 
+	Serial.println("hola");
+
 	if (value.equals("smile-face"))
 		Letter::setPredefined(Letter::predefined_t::smile, srate);
 	else if (value.equals("pacman"))
@@ -139,5 +143,24 @@ void WebServer::handlePostPredefined()
 		Letter::setPredefined(Letter::predefined_t::noPredefined, 0);
 
 	server.sendHeader("Location", String("/"), true);
+	server.send(302, "text/plain", "");
+}
+
+void WebServer::handlePostAdmin(){
+	uint16_t brightness = server.arg("brightness").toInt();
+	String enabled = server.arg("enabled");
+
+	Letter::setIntensity(brightness);
+	if(enabled.equals("on"))
+		Letter::setEnabled(true);
+	else
+		Letter::setEnabled(false);
+	server.sendHeader("Location", String("/admin"), true);
+	server.send(302, "text/plain", "");
+}
+
+void WebServer::handleGetClear(){
+	Letter::clearScreen();
+	server.sendHeader("Location", String("/admin"), true);
 	server.send(302, "text/plain", "");
 }

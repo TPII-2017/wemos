@@ -42,17 +42,20 @@ private:
 	// Maneja el POST del proceso de postear un sprite predefinido.
 	static void handlePostPredefined();
 	// Maneja el POST del proceso de partyOn.
-	static void handlePostPartyOn();
+	static void handleGetPartyOn();
 	// Maneja el GET del proceso de index.
 	static void handleGetIndex();
 	// Maneja el POST del proceso de autenticación.
-	static void handleAdmin();
+	static void handleGetAdmin();
 	// Devuelve los archivos css.
 	static void handleCss();
 	// Devuelve los archivos js.
 	static void handleJs();
 	// Devuelve el ícono.
 	static void handleGetFavicon();
-
+	// Maneja el GET del clear de la pantalla
+	static void handleGetClear();
+	// Maneja el POST del proceso de configuracion de admin
+	static void handlePostAdmin();
 
 };

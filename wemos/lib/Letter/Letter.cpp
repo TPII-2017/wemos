@@ -167,11 +167,13 @@ void Letter::setMessage(const char* message, uint8_t strLen, int16_t srate)
 
 	for(int8_t j = strLen; j < maxSize; j++)
 		base->text.message[j] = ' ';
-	base->text.message[maxSize] = 0;
+	
+	base->text.message[maxSize] = ' ';
+	base->text.message[maxSize+1] = 0;
 	
 	base->srate = srate;
 	base->remainingSlideTicks = 0;
-	base->text.textLength = maxSize;
+	base->text.textLength = maxSize+1;
 	base->text.letterIndex = mLetterCount - 1;
 	base->text.columnIndex = MAX_COLUMNS - 1;
 

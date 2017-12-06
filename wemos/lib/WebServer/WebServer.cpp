@@ -29,7 +29,6 @@ void WebServer::init()
 	server.on("/predefined", HTTP_POST, handlePostPredefined);
 	server.on("/party", HTTP_GET, handleGetPartyOn);
 	server.on("/", HTTP_GET, handleGetIndex);
-	server.on("/admin", HTTP_GET, handleGetAdmin);
 	server.on("/static/favicon.png", HTTP_GET, handleGetFavicon);
 	server.on("/admin", HTTP_POST, handlePostAdmin);
 	server.on("/clear", HTTP_GET, handleGetClear);
@@ -73,8 +72,7 @@ void WebServer::handleNotFound()
 void WebServer::handlePostAuthentication()
 {
 	if (server.arg("token").equals(TOKEN)) {
-		server.sendHeader("Location", String("/admin"), true);
-		server.send(302, "text/plain", "");
+		handleGetAdmin();
 	} else {
 		handleGetAuthentication();
 	}
@@ -90,9 +88,7 @@ void WebServer::handleGetAuthentication()
 void WebServer::handleGetPartyOn()
 {
 	Letter::setPartyOn();
-	
-	server.sendHeader("Location", String("/admin"), true);
-	server.send(302, "text/plain", "");
+	handleGetAdmin();
 }
 
 void WebServer::handlePostPhrase()
@@ -150,17 +146,15 @@ void WebServer::handlePostAdmin(){
 	uint16_t brightness = server.arg("brightness").toInt();
 	String enabled = server.arg("enabled");
 
-	Letter::setIntensity(brightness);
+	Letter::setIntensity(brightness - 1);
 	if(enabled.equals("on"))
 		Letter::setEnabled(true);
 	else
 		Letter::setEnabled(false);
-	server.sendHeader("Location", String("/admin"), true);
-	server.send(302, "text/plain", "");
+	handleGetAdmin();
 }
 
 void WebServer::handleGetClear(){
 	Letter::clearScreen();
-	server.sendHeader("Location", String("/admin"), true);
-	server.send(302, "text/plain", "");
+	handleGetAdmin();
 }

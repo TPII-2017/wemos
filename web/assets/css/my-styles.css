@@ -49,7 +49,7 @@ input[type='checkbox']:checked:after {
 
 .matrix {
 	overflow: visible;
-	min-width: 350px;
+	min-width: 25em;
 	display: block;
 }
 

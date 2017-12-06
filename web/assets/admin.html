@@ -154,7 +154,7 @@
 						</div>
 						<div class="card-footer" style="height: 55px">
 							<label class="switch">
-								<input type="checkbox" checked>
+								<input type="checkbox" checked name="enabled">
 								<span class="slider round"></span>
 							</label>
 						</div>
@@ -172,7 +172,7 @@
 						</div>
 						<div class="card-footer" style="height: 55px">
 							<div id="slidecontainer">
-								<input type="range" min="0" max="15" value="10" class="sliderbar" id="sliderBar">
+								<input type="range" min="0" max="15" value="15" name="brightness" class="sliderbar" id="sliderBar">
 								<span id="sliderValue"></span>
 							</div>
 						</div>
@@ -189,13 +189,13 @@
 							</p>
 						</div>
 						<div class="card-footer" style="height: 55px">
-							<button class="btn btn-sm btn-danger" type="button">Borrar</button>
+							<a href="/clear" class="button btn btn-sm btn-danger">Borrar</a>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="row justify-content-center">
-				<button class="btn btn-md btn-success" type="button">Guardar</button>
+				<button class="btn btn-md btn-success" type="submit">Guardar</button>
 			</div>
 		</form>
 		<div style="margin: 10px;"></div>

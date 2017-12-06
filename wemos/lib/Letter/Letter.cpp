@@ -122,8 +122,6 @@ static void countWithModule2(uint8_t &s, uint8_t mxs, uint8_t &mn, uint8_t mxmn,
 
 void Letter::init()
 {
-	Serial.begin(115200);
-
 	mLetterCount = LETTERS_COUNT;
 	pinMode(SS, OUTPUT);
 	SPI.begin();
@@ -237,7 +235,7 @@ void Letter::setPartyOn()
 	base_t* base = reinterpret_cast<base_t*>(mRaw);
 	base->party.on = 0;
 	base->party.remainingTicks = 0;
-	base->party.ticks = 250;
+	base->party.ticks = 100;
 
 	mType = type_t::party;
 }
@@ -388,8 +386,6 @@ void Letter::predefinedTick()
 				uint8_t value = mCommandBuffer[k * MAX_COLUMNS + j];
 
 				SPI.transfer16(address << 8 | (value & 0x00FF));
-				Serial.print("Address = "); Serial.print(address); Serial.print("\tValue = "); Serial.println(value);
-
 			}
 			digitalWrite(SS, HIGH);
 

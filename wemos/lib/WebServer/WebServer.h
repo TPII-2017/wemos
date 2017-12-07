@@ -57,5 +57,7 @@ private:
 	static void handleGetClear();
 	// Maneja el POST del proceso de configuracion de admin
 	static void handlePostAdmin();
+	// Devuelve el estado actual del sistema
+	static void handleGetState();
 
 };

@@ -32,6 +32,7 @@ void WebServer::init()
 	server.on("/static/favicon.png", HTTP_GET, handleGetFavicon);
 	server.on("/admin", HTTP_POST, handlePostAdmin);
 	server.on("/clear", HTTP_GET, handleGetClear);
+	server.on("/state", handleGetState);
 
 	server.begin();
 }
@@ -40,6 +41,11 @@ void WebServer::tick()
 {
 	dnsServer.processNextRequest();
 	server.handleClient();
+}
+
+void WebServer::handleGetState()
+{
+	server.send(200, "text/plain", String(Letter::getIntensity() + 1) + "/" + String(Letter::isEnabled()));
 }
 
 void WebServer::handleGetFavicon()
